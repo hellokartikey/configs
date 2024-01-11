@@ -2,10 +2,10 @@ VIM_CONFIG = init.vim
 
 all: vim_conf nvim_conf
 
-vim_conf: ${VIM_CONFIG} vim_plug
+vim_conf: ${VIM_CONFIG}
 	ln -sf ${PWD}/init.vim ~/.vimrc
 
-nvim_conf: ${VIM_CONFIG} nvim_plug
+nvim_conf: ${VIM_CONFIG}
 	ln -sf ${PWD}/init.vim ~/.config/nvim/init.vim
 
 vim_plug:
