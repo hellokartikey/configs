@@ -33,14 +33,17 @@ set colorcolumn=80,120
 set cursorline
 
 " Colors
-highlight CursorLine ctermbg=236 cterm=none
-highlight CursorLineNr ctermbg=236 cterm=none
-highlight ColorColumn ctermbg=236
-highlight Visual ctermbg=239
+highlight CursorLine term=reverse cterm=none ctermbg=236
+highlight CursorLineNR term=reverse cterm=none ctermbg=236
+highlight ColorColumn term=reverse cterm=none ctermbg=236
+highlight Visual term=reverse ctermbg=239
 
 " Tree Setup
-nmap <C-b> :NERDTreeToggle<CR>
+nnoremap <C-b> :NERDTreeToggle<CR>
+nnoremap <C-f> :NERDTreeFind<CR>
+let NERDTreeQuitOnOpen=1
 let NERDTreeMinimalUI=1
+let NERDTreeMinimalMenu=1
 
 " Close vim when NERDTree is the last window
 autocmd BufEnter *
@@ -62,5 +65,4 @@ autocmd BufEnter *
   \   | execute "normal! \<C-W>w"
   \   | execute 'buffer'.buf |
   \ endif
-
 
