@@ -8,6 +8,7 @@ call plug#end()
 
 " Airline Stuff
 let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'default'
 let g:airline_symbols_ascii = 1
 
 " Switch tabs
@@ -33,10 +34,16 @@ set colorcolumn=80,120
 set cursorline
 
 " Colors
-highlight CursorLine term=reverse cterm=none ctermbg=236
-highlight CursorLineNR term=reverse cterm=none ctermbg=236
-highlight ColorColumn term=reverse cterm=none ctermbg=236
-highlight Visual term=reverse ctermbg=239
+if &background ==# "dark"
+  highlight Visual term=reverse cterm=none ctermbg=238
+  highlight CursorLine term=reverse cterm=none ctermbg=236
+elseif &background ==# "light"
+  highlight Visual term=reverse cterm=none ctermbg=251
+  highlight CursorLine term=reverse cterm=none ctermbg=253
+endif
+
+highlight! link CursorLineNR CursorLine
+highlight! link ColorColumn CursorLine
 
 " Tree Setup
 nnoremap <C-b> :NERDTreeToggle<CR>
@@ -55,8 +62,8 @@ autocmd BufEnter *
  \ endif
 
 " Prevent other buffers from replacing the tree
-autocmd BufEnter * 
-  \ if winnr() == winnr('h') && 
+autocmd BufEnter *
+  \ if winnr() == winnr('h') &&
   \     bufname('#') =~ 'NERD_tree_\d\+' &&
   \     bufname('%') !~ 'NERD_tree_\d\+' &&
   \     winnr('$') > 1
