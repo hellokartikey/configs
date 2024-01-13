@@ -2,6 +2,8 @@ call plug#begin()
 
 Plug 'vim-airline/vim-airline'
 
+Plug 'vim-airline/vim-airline-themes'
+
 Plug 'preservim/nerdtree'
 
 call plug#end()
@@ -10,6 +12,7 @@ call plug#end()
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'default'
 let g:airline_symbols_ascii = 1
+let g:airline_theme='base16_colors'
 
 " Switch tabs
 nnoremap <TAB> :bnext<CR>
@@ -33,14 +36,18 @@ set relativenumber
 set colorcolumn=80,120
 set cursorline
 
-" Colors
-if &background ==# "dark"
-  highlight Visual term=reverse cterm=none ctermbg=238
-  highlight CursorLine term=reverse cterm=none ctermbg=236
-elseif &background ==# "light"
-  highlight Visual term=reverse cterm=none ctermbg=251
-  highlight CursorLine term=reverse cterm=none ctermbg=253
-endif
+" Colorsa
+function! SetColorScheme()
+  if &background == "dark"
+    highlight Visual term=reverse cterm=none ctermbg=238
+    highlight CursorLine term=reverse cterm=none ctermbg=236
+  elseif &background == "light"
+    highlight Visual term=reverse cterm=none ctermbg=251
+    highlight CursorLine term=reverse cterm=none ctermbg=253
+  endif
+endfunction
+
+autocmd VimEnter * exe "call SetColorScheme()"
 
 highlight! link CursorLineNR CursorLine
 highlight! link ColorColumn CursorLine
