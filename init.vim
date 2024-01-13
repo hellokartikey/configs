@@ -60,9 +60,11 @@ highlight! link ColorColumn CursorLine
 " Tree Setup
 nnoremap <C-b> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
-let NERDTreeQuitOnOpen=1
 let NERDTreeMinimalUI=1
 let NERDTreeMinimalMenu=1
+
+" Silently open file as buffer
+autocmd FileType nerdtree nmap <buffer> <CR> go
 
 " Close vim when NERDTree is the last window
 autocmd BufEnter *
