@@ -8,6 +8,9 @@ Plug 'preservim/nerdtree'
 
 call plug#end()
 
+" Disable mouse
+set mouse=
+
 " Airline Stuff
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'default'
@@ -36,7 +39,7 @@ set relativenumber
 set colorcolumn=80,120
 set cursorline
 
-" Colorsa
+" Colors
 function! SetColorScheme()
   if &background == "dark"
     highlight Visual term=reverse cterm=none ctermbg=238
@@ -46,8 +49,10 @@ function! SetColorScheme()
     highlight CursorLine term=reverse cterm=none ctermbg=253
   endif
 endfunction
+command! SetColorScheme call SetColorScheme()
 
-autocmd VimEnter * exe "call SetColorScheme()"
+autocmd OptionSet background SetColorScheme
+autocmd VimEnter * SetColorScheme
 
 highlight! link CursorLineNR CursorLine
 highlight! link ColorColumn CursorLine
