@@ -65,7 +65,9 @@ let NERDTreeMinimalUI=1
 let NERDTreeMinimalMenu=1
 
 " Silently open file as buffer
-autocmd FileType nerdtree nmap <buffer> <CR> go
+let NERDTreeCustomOpenArgs = {
+  \ 'file': {'reuse': 'all', 'where': 'p', 'keepopen': 1, 'stay': 1},
+  \ 'dir': {} }
 
 " Close vim when NERDTree is the last window
 autocmd BufEnter *
