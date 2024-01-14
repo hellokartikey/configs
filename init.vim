@@ -1,3 +1,17 @@
+" Binding Table
+"
+" NORMAL
+"   <TAB>   : Move to next buffer
+"   <S-TAB> : Move to prev buffer
+"   <C-w>   : Close current buffer
+"   <S-w>   : Show whitespaces
+"   <C-b>   : Open NERDTree
+"   <C-f>   : Find current buffer in NERDTree
+"
+" VISUAL
+"   >       : Indent selected lines one unit
+"   <       : Unindent selected lines one unit
+
 call plug#begin()
 
 Plug 'vim-airline/vim-airline'
@@ -24,11 +38,6 @@ let g:airline_theme = 'base16_colors'
 nnoremap <TAB> :bnext<CR>
 nnoremap <S-TAB> :bprevious<CR>
 nnoremap <C-w> :bdelete<CR>
-
-" Save
-nnoremap <C-s> :w<CR>
-nnoremap <S-s> :saveas<space>
-nnoremap <C-q> :q<CR>
 
 " Indent
 vnoremap < <gv
