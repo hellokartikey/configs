@@ -1,9 +1,7 @@
 call plug#begin()
 
 Plug 'vim-airline/vim-airline'
-
 Plug 'vim-airline/vim-airline-themes'
-
 Plug 'preservim/nerdtree'
 
 call plug#end()
@@ -15,7 +13,7 @@ set mouse=
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'default'
 let g:airline_symbols_ascii = 1
-let g:airline_theme='base16_colors'
+let g:airline_theme = 'base16_colors'
 
 " Switch tabs
 nnoremap <TAB> :bnext<CR>
@@ -61,8 +59,10 @@ highlight! link ColorColumn CursorLine
 " Tree Setup
 nnoremap <C-b> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
-let NERDTreeMinimalUI=1
-let NERDTreeMinimalMenu=1
+let g:NERDTreeMinimalUI = 1
+let g:NERDTreeMinimalMenu = 1
+let g:NERDTreeShowHidden = 1
+let g:NERDTreeIgnore = ['__pycache__$', '.git$']
 
 " Silently open file as buffer
 let NERDTreeCustomOpenArgs = {
