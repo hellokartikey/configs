@@ -36,7 +36,7 @@ set number
 set relativenumber
 set colorcolumn=80,120
 set cursorline
-set wrap!
+set nowrap
 
 " Colors
 function! SetColorScheme()
