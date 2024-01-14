@@ -20,6 +20,9 @@ Plug 'preservim/nerdtree'
 
 call plug#end()
 
+" Leader key
+let g:mapleader = ' '
+
 " Enable syntax highlight
 syntax on
 
