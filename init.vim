@@ -6,11 +6,16 @@ Plug 'preservim/nerdtree'
 
 call plug#end()
 
+" Enable syntax highlight
+syntax on
+
 " Disable mouse
 set mouse=
 
 " Airline Stuff
 let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#left_sep = ' '
+let g:airline#extensions#tabline#left_alt_sep = '|'
 let g:airline#extensions#tabline#formatter = 'default'
 let g:airline_symbols_ascii = 1
 let g:airline_theme = 'base16_colors'
@@ -18,6 +23,12 @@ let g:airline_theme = 'base16_colors'
 " Switch tabs
 nnoremap <TAB> :bnext<CR>
 nnoremap <S-TAB> :bprevious<CR>
+nnoremap <C-w> :bdelete<CR>
+
+" Save
+nnoremap <C-s> :w<CR>
+nnoremap <S-s> :saveas<space>
+nnoremap <C-q> :q<CR>
 
 " Indent
 vnoremap < <gv
@@ -28,15 +39,19 @@ set listchars=tab:▸\ ,eol:¬,space:.
 nnoremap <S-w> :set list!<CR>
 
 " Lines
-syntax on
+set number
+set relativenumber
+set nowrap
+set scrolloff=8
+
+" Highlight Lines
+set colorcolumn=80,120
+set cursorline
+
+" Tabs
 set tabstop=2
 set shiftwidth=2
 set expandtab
-set number
-set relativenumber
-set colorcolumn=80,120
-set cursorline
-set nowrap
 
 " Colors
 function! SetColorScheme()
