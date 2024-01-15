@@ -1,16 +1,19 @@
 " Binding Table
 "
+" LEADER
+"   <SPACE>
+"
 " NORMAL
-"   <TAB>   : Move to next buffer
-"   <S-TAB> : Move to prev buffer
-"   <C-w>   : Close current buffer
-"   <S-w>   : Show whitespaces
-"   <C-b>   : Open NERDTree
-"   <C-f>   : Find current buffer in NERDTree
+"   <TAB>       : Move to next buffer
+"   <S-TAB>     : Move to prev buffer
+"   <leader>w   : Close current buffer
+"   <leader>e   : Show whitespaces
+"   <leader>t   : Open NERDTree
+"   <leader>f   : Find current buffer in NERDTree
 "
 " VISUAL
-"   >       : Indent selected lines one unit
-"   <       : Unindent selected lines one unit
+"   >           : Indent selected lines one unit
+"   <           : Unindent selected lines one unit
 
 call plug#begin()
 
@@ -40,7 +43,7 @@ let g:airline_theme = 'base16_colors'
 " Switch tabs
 nnoremap <TAB> :bnext<CR>
 nnoremap <S-TAB> :bprevious<CR>
-nnoremap <C-w> :bdelete<CR>
+nnoremap <leader>w :bdelete<CR>
 
 " Indent
 vnoremap < <gv
@@ -48,7 +51,7 @@ vnoremap > >gv
 
 " Show whitespaces
 set listchars=tab:▸\ ,eol:¬,space:.
-nnoremap <S-w> :set list!<CR>
+nnoremap <leader>e :set list!<CR>
 
 " Lines
 set number
@@ -84,8 +87,8 @@ highlight! link CursorLineNR CursorLine
 highlight! link ColorColumn CursorLine
 
 " Tree Setup
-nnoremap <C-b> :NERDTreeToggle<CR>
-nnoremap <C-f> :NERDTreeFind<CR>
+nnoremap <leader>t :NERDTreeToggle<CR>
+nnoremap <leader>f :NERDTreeFind<CR>
 let g:NERDTreeMinimalUI = 1
 let g:NERDTreeMinimalMenu = 1
 let g:NERDTreeShowHidden = 1
@@ -96,7 +99,7 @@ let NERDTreeCustomOpenArgs = {
   \ 'file': {'reuse': 'all', 'where': 'p', 'keepopen': 1, 'stay': 1},
   \ 'dir': {} }
 
-" Close vim when NERDTree is the last window
+" Exit Vim when NERDTree is the only remaining window in the only tab
 autocmd BufEnter *
  \ if tabpagenr('$') == 1 &&
  \     winnr('$') == 1 &&
@@ -116,4 +119,8 @@ autocmd BufEnter *
   \   | execute "normal! \<C-W>w"
   \   | execute 'buffer'.buf |
   \ endif
+
+" Start NERDTree when Vim is started without file arguments.
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists('s:std_in') | NERDTree | endif
 
