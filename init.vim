@@ -6,14 +6,20 @@
 " NORMAL
 "   <TAB>       : Move to next buffer
 "   <S-TAB>     : Move to prev buffer
+"
 "   <leader>w   : Close current buffer
+"   <leader>s   : Update current buffer
+"   <leader>o   : Open a buffer
+"
 "   <leader>e   : Show whitespaces
+"
 "   <leader>t   : Open NERDTree
 "   <leader>f   : Find current buffer in NERDTree
 "
 " VISUAL
 "   >           : Indent selected lines one unit
 "   <           : Unindent selected lines one unit
+"
 
 call plug#begin()
 
@@ -44,6 +50,10 @@ let g:airline_theme = 'base16_colors'
 nnoremap <TAB> :bnext<CR>
 nnoremap <S-TAB> :bprevious<CR>
 nnoremap <leader>w :bdelete<CR>
+
+" File management
+nnoremap <leader>s :update<CR>
+nnoremap <leader>o :edit<space>
 
 " Indent
 vnoremap < <gv
