@@ -13,8 +13,10 @@
 "
 "   <leader>e   : Show whitespaces
 "
-"   <leader>t   : Open NERDTree
+"   <leader>t   : Toggle NERDTree
 "   <leader>f   : Find current buffer in NERDTree
+"
+"   <leader>u   : Toggle Undotree
 "
 " VISUAL
 "   >           : Indent selected lines one unit
@@ -25,15 +27,18 @@ call plug#begin()
 
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+
 Plug 'preservim/nerdtree'
 
+Plug 'tpope/vim-surround'
+
+Plug 'mbbill/undotree'
+
 if has('nvim')
-
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-
 endif
-call plug#end()
 
+call plug#end()
 
 " Leader key
 let g:mapleader = ' '
@@ -60,6 +65,27 @@ nnoremap <leader>w :bdelete<CR>
 " File management
 nnoremap <leader>s :update<CR>
 nnoremap <leader>o :edit<space>
+
+" Undotree
+nnoremap <leader>u :UndotreeToggle<CR>
+let g:undotree_WindowLayout = 3
+let g:undotree_SetFocusWhenToggle = 1
+let g:undotree_ShortIndicators = 1
+let g:undotree_ShortIndicators = 1
+let g:undotree_SplitWidth = 30
+let g:undotree_DiffpanelHeight = 10
+let g:undotree_HelpLine = 0
+
+if has("persistent_undo")
+   let target_path = expand('~/.cache/undodir')
+
+    if !isdirectory(target_path)
+        call mkdir(target_path, "p", 0700)
+    endif
+
+    let &undodir=target_path
+    set undofile
+endif
 
 " Indent
 vnoremap < <gv
@@ -142,27 +168,6 @@ autocmd VimEnter * if argc() == 0 && !exists('s:std_in') | NERDTree | endif
 
 " Treesitter Setup
 if has('nvim')
-lua << EOF
-require("nvim-treesitter.configs").setup({
-    ensure_installed = {
-      "c",
-      "cpp",
-      "cmake",
-      "python",
-      "diff",
-      "html",
-      "css",
-      "javascript",
-      "qmljs",
-      "vim",
-      "xml"
-    },
-    sync_install = false,
-    auto_install = true,
-    highlight = {
-        enable = true,
-    },
-})
-EOF
+  lua require('treesitter')
 endif
 

@@ -6,7 +6,9 @@ vim_conf: ${VIM_CONFIG}
 	ln -sf ${PWD}/init.vim ~/.vimrc
 
 nvim_conf: ${VIM_CONFIG}
+	mkdir -p ~/.config/nvim/lua
 	ln -sf ${PWD}/init.vim ~/.config/nvim/init.vim
+	ln -sf ${PWD}/treesitter.lua ~/.config/nvim/lua/treesitter.lua
 
 vim_plug:
 	curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
