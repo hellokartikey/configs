@@ -25,6 +25,8 @@
 
 call plug#begin()
 
+Plug 'chriskempson/base16-vim'
+
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
@@ -49,13 +51,16 @@ syntax on
 " Disable mouse
 set mouse=
 
+" Colorshceme
+let g:base16colorspace = 256
+set termguicolors
+colorscheme base16-chalk
+
 " Airline Stuff
 let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#left_sep = ' '
-let g:airline#extensions#tabline#left_alt_sep = '|'
 let g:airline#extensions#tabline#formatter = 'default'
 let g:airline_symbols_ascii = 1
-let g:airline_theme = 'base16_colors'
+let g:airline_theme = 'base16'
 
 " Switch tabs
 nnoremap <TAB> :bnext<CR>
