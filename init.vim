@@ -27,7 +27,13 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'preservim/nerdtree'
 
+if has('nvim')
+
+  Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+endif
 call plug#end()
+
 
 " Leader key
 let g:mapleader = ' '
