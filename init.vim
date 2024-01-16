@@ -140,3 +140,29 @@ autocmd BufEnter *
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists('s:std_in') | NERDTree | endif
 
+" Treesitter Setup
+if has('nvim')
+lua << EOF
+require("nvim-treesitter.configs").setup({
+    ensure_installed = {
+      "c",
+      "cpp",
+      "cmake",
+      "python",
+      "diff",
+      "html",
+      "css",
+      "javascript",
+      "qmljs",
+      "vim",
+      "xml"
+    },
+    sync_install = false,
+    auto_install = true,
+    highlight = {
+        enable = true,
+    },
+})
+EOF
+endif
+
