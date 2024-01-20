@@ -18,6 +18,8 @@
 "
 "   <leader>u   : Toggle Undotree
 "
+"   <leader>p   : Open CtrlP
+"
 " VISUAL
 "   >           : Indent selected lines one unit
 "   <           : Unindent selected lines one unit
@@ -36,6 +38,8 @@ Plug 'preservim/nerdtree'
 Plug 'tpope/vim-surround'
 
 Plug 'mbbill/undotree'
+
+Plug 'ctrlpvim/ctrlp.vim'
 
 if has('nvim')
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -61,6 +65,13 @@ set noshowmode
 nnoremap <TAB> :bnext<CR>
 nnoremap <S-TAB> :bprevious<CR>
 nnoremap <leader>w :bdelete<CR>
+
+" CtrlP
+let g:ctrlp_map = ''
+let g:ctrlp_show_hidden = 1
+let g:ctrlp_open_new_file = 'r'
+let g:ctrlp_open_multiple_files = 'ri'
+nnoremap <leader>p :CtrlP<CR>
 
 " Buftabline
 highlight! BufTabLineCurrent cterm=bold ctermbg=4
