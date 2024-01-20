@@ -27,8 +27,9 @@ call plug#begin()
 
 Plug 'chriskempson/base16-vim'
 
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'itchyny/lightline.vim'
+
+Plug 'ap/vim-buftabline'
 
 Plug 'preservim/nerdtree'
 
@@ -51,21 +52,24 @@ syntax on
 " Disable mouse
 set mouse=
 
-" Colorshceme
-let g:base16colorspace = 256
-set termguicolors
-colorscheme base16-chalk
-
-" Airline Stuff
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#formatter = 'default'
-let g:airline_symbols_ascii = 1
-let g:airline_theme = 'base16'
+" Lightline
+let g:lightline = { 'colorscheme': '16color', }
+let g:lightline.enable = { 'statusline': 1, 'tabline': 0 }
+set noshowmode
 
 " Switch tabs
 nnoremap <TAB> :bnext<CR>
 nnoremap <S-TAB> :bprevious<CR>
 nnoremap <leader>w :bdelete<CR>
+
+" Buftabline
+highlight! BufTabLineCurrent cterm=bold ctermbg=4
+highlight! BufTabLineActive cterm=bold ctermbg=14
+highlight! BufTabLineHidden cterm=none ctermfg=15 ctermbg=8
+highlight! link BufTabLineFill CursorLine
+let g:buftabline_show = 2
+let g:buftabline_indicators = 1
+let g:buftabline_separators = 1
 
 " File management
 nnoremap <leader>s :update<CR>
@@ -82,7 +86,7 @@ let g:undotree_DiffpanelHeight = 10
 let g:undotree_HelpLine = 0
 
 if has("persistent_undo")
-   let target_path = expand('~/.cache/undodir')
+    let target_path = expand('~/.cache/undodir')
 
     if !isdirectory(target_path)
         call mkdir(target_path, "p", 0700)
