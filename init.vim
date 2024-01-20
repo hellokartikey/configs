@@ -74,13 +74,11 @@ let g:ctrlp_open_multiple_files = 'ri'
 nnoremap <leader>p :CtrlP<CR>
 
 " Buftabline
-highlight! BufTabLineCurrent cterm=bold ctermbg=4
-highlight! BufTabLineActive cterm=bold ctermbg=14
-highlight! BufTabLineHidden cterm=none ctermfg=15 ctermbg=8
+highlight! BufTabLineCurrent cterm=bold ctermbg=12
+highlight! BufTabLineActive cterm=bold ctermbg=8
+highlight! link BufTabLineHidden CursorLine
 highlight! link BufTabLineFill CursorLine
-let g:buftabline_show = 2
 let g:buftabline_indicators = 1
-let g:buftabline_separators = 1
 
 " File management
 nnoremap <leader>s :update<CR>
