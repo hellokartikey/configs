@@ -186,8 +186,12 @@ autocmd BufEnter *
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists('s:std_in') | NERDTree | endif
 
-" Treesitter Setup
+" File types
+au BufRead,BufNewFile *.qrc setfiletype xml
+au BufRead,BufNewFile *.qml setfiletype qmljs
+
 if has('nvim')
+  " Treesitter Setup
   lua require('treesitter')
 endif
 
