@@ -14,11 +14,12 @@
 "   <leader>e   : Show whitespaces
 "
 "   <leader>t   : Toggle NERDTree
-"   <leader>f   : Find current buffer in NERDTree
+"   <leader>y   : Find current buffer in NERDTree
 "
 "   <leader>u   : Toggle Undotree
 "
-"   <leader>p   : Open CtrlP
+"   <leader>f   : Open FZF
+"   <leader>g   : Open FZF Buffers
 "
 " VISUAL
 "   >           : Indent selected lines one unit
@@ -39,7 +40,10 @@ Plug 'tpope/vim-surround'
 
 Plug 'mbbill/undotree'
 
-Plug 'ctrlpvim/ctrlp.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+Plug 'christoomey/vim-tmux-navigator'
 
 if has('nvim')
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -66,12 +70,12 @@ nnoremap <TAB> :bnext<CR>
 nnoremap <S-TAB> :bprevious<CR>
 nnoremap <leader>w :bdelete<CR>
 
-" CtrlP
-let g:ctrlp_map = ''
-let g:ctrlp_show_hidden = 1
-let g:ctrlp_open_new_file = 'r'
-let g:ctrlp_open_multiple_files = 'ri'
-nnoremap <leader>p :CtrlP<CR>
+" FZF
+let g:fzf_vim = {}
+let g:fzf_layout = { 'down': '20%' }
+let g:fzf_vim.preview_window = []
+nnoremap <leader>f :Files<CR>
+nnoremap <leader>g :Buffers<CR>
 
 " Buftabline
 highlight! BufTabLineCurrent cterm=bold ctermbg=12
@@ -148,7 +152,7 @@ highlight! link ColorColumn CursorLine
 
 " Tree Setup
 nnoremap <leader>t :NERDTreeToggle<CR>
-nnoremap <leader>f :NERDTreeFind<CR>
+nnoremap <leader>y :NERDTreeFind<CR>
 let g:NERDTreeMinimalUI = 1
 let g:NERDTreeMinimalMenu = 1
 let g:NERDTreeShowHidden = 1
