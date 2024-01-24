@@ -45,6 +45,8 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'christoomey/vim-tmux-navigator'
 
+Plug 'christoomey/vim-system-copy'
+
 if has('nvim')
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 endif
@@ -72,7 +74,7 @@ nnoremap <leader>w :bdelete<CR>
 
 " FZF
 let g:fzf_vim = {}
-let g:fzf_layout = { 'down': '20%' }
+let g:fzf_layout = { 'down': '10' }
 let g:fzf_vim.preview_window = []
 nnoremap <leader>f :Files<CR>
 nnoremap <leader>g :Buffers<CR>
