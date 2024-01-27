@@ -1,7 +1,12 @@
 VIM_CONFIG = init.vim
 TMUX_CONFIG = tmux.conf
+ZSHRC = zshrc
 
-all: vim_conf nvim_conf tmux
+all: vim_conf nvim_conf tmux zsh
+
+zsh: ${ZSHRC}
+	cp ~/.zshrc
+	@echo "New .zshrc installed. Source it."
 
 tmux: ${TMUX_CONFIG}
 	mkdir -p ~/.config/tmux
@@ -30,4 +35,12 @@ nvim_plug:
 		'${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/autoload/plug.vim' \
 		--create-dirs \
 		https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+
+ohmyzsh:
+	sh -c "$(curl -fsSL \
+		https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+	git clone https://github.com/zsh-users/zsh-autosuggestions.git \
+		~/.ohmyzsh/plugins/zsh-autosuggestions
+	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
+		~/.ohmyzsh/plugins/zsh-syntax-highlighting
 

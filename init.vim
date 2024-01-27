@@ -116,7 +116,9 @@ vnoremap < <gv
 vnoremap > >gv
 
 " Show whitespaces
-set listchars=tab:▸\ ,eol:¬,space:.
+set listchars=tab:⇄\ ,eol:↵,space:.
+highlight! Whitespace term=none ctermfg=gray
+highlight! link NonText Whitespace
 nnoremap <leader>e :set list!<CR>
 
 " Lines
