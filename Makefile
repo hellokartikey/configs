@@ -5,7 +5,8 @@ ZSHRC = zshrc
 all: vim_conf nvim_conf tmux zsh
 
 zsh: ${ZSHRC}
-	cp ~/.zshrc
+	cp ${PWD}/zshrc ~/.zshrc
+	cp ${PWD}/ktheme.zsh-theme ~/.oh-my-zsh/themes
 	@echo "New .zshrc installed. Source it."
 
 tmux: ${TMUX_CONFIG}
@@ -37,10 +38,7 @@ nvim_plug:
 		https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
 
 ohmyzsh:
-	sh -c "$(curl -fsSL \
-		https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-	git clone https://github.com/zsh-users/zsh-autosuggestions.git \
-		~/.ohmyzsh/plugins/zsh-autosuggestions
-	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
-		~/.ohmyzsh/plugins/zsh-syntax-highlighting
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+	git clone https://github.com/zsh-users/zsh-autosuggestions.git ~/.oh-my-zsh/plugins/zsh-autosuggestions
+	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/plugins/zsh-syntax-highlighting
 
