@@ -6,7 +6,7 @@ all: vim_conf nvim_conf tmux zsh
 
 zsh: ${ZSHRC}
 	cp ${PWD}/zshrc ~/.zshrc
-	cp ${PWD}/ktheme.zsh-theme ~/.oh-my-zsh/themes
+	ln -sf ${PWD}/ktheme.zsh-theme ~/.oh-my-zsh/themes
 	@echo "New .zshrc installed. Source it."
 
 tmux: ${TMUX_CONFIG}

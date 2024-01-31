@@ -12,6 +12,7 @@
 "   <leader>o   : Open a buffer
 "
 "   <leader>e   : Show whitespaces
+"   <leader>r   : Toggle relative line number
 "
 "   <leader>t   : Toggle NERDTree
 "   <leader>y   : Find current buffer in NERDTree
@@ -59,8 +60,8 @@ let g:mapleader = ' '
 " Enable syntax highlight
 syntax on
 
-" Disable mouse
-set mouse=
+" Enable mouse
+set mouse=a
 
 " Lightline
 let g:lightline = { 'colorscheme': '16color', }
@@ -123,9 +124,10 @@ nnoremap <leader>e :set list!<CR>
 
 " Lines
 set number
-set relativenumber
 set nowrap
 set scrolloff=8
+
+nnoremap <leader>r :set relativenumber!<CR>
 
 " Highlight Lines
 set colorcolumn=80,120
