@@ -147,6 +147,9 @@ function! SetColorScheme()
     highlight Visual term=reverse cterm=none ctermbg=251
     highlight CursorLine term=reverse cterm=none ctermbg=253
   endif
+  execute 'source' globpath(&rtp, 'autoload/lightline/colorscheme/16color.vim')
+  call lightline#colorscheme()
+  call lightline#update()
 endfunction
 command! SetColorScheme call SetColorScheme()
 
