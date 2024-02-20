@@ -1,44 +1,54 @@
-VIM_CONFIG = init.vim
-TMUX_CONFIG = tmux.conf
-ZSHRC = zshrc
+SCRIPTS_DIR = ${PWD}/scripts
+
+ZSH_DIR = ${PWD}/zsh
+TMUX_DIR = ${PWD}/tmux
+VIM_DIR = ${PWD}/vim
+
+VIM_CONFIG = ${VIM_DIR}/init.vim
+VIM_THEME = ${VIM_DIR}/16color.vim
+VIM_TREE = ${VIM_DIR}/tresitter.lua
+
+TMUX_CONFIG = ${TMUX_DIR}/tmux.conf
+
+ZSH_RC = ${ZSH_DIR}/zshrc
+ZSH_THEME = ${ZSH_DIR}/ktheme.zsh-theme
+
+DOWNLOAD_NVIMPLUG = ${SCRIPTS_DIR}/nvim_plug.sh
+DOWNLOAD_VIMPLUG = ${SCRIPTS_DIR}/vim_plug.sh
+DOWNLOAD_TPM = ${SCRIPTS_DIR}/tpm.sh
+DOWNLOAD_OMZ = ${SCRIPTS_DIR}/ohmyzsh.sh
 
 all: vim_conf nvim_conf tmux zsh
 
-zsh: ${ZSHRC}
-	cp ${PWD}/zshrc ~/.zshrc
-	ln -sf ${PWD}/ktheme.zsh-theme ~/.oh-my-zsh/themes
+zsh: ${ZSH_RC} ohmyzsh
+	@cp ${ZSH_RC} ~/.zshrc
+	@ln -sf ${ZSH_THEME} ~/.oh-my-zsh/themes/
 	@echo "New .zshrc installed. Source it."
 
-tmux: ${TMUX_CONFIG}
-	mkdir -p ~/.config/tmux
-	ln -sf ${PWD}/${TMUX_CONFIG} ~/.config/tmux/${TMUX_CONFIG}
+tmux: ${TMUX_CONFIG} tmux_plugins
+	@mkdir -p ~/.config/tmux
+	@ln -sf ${TMUX_CONFIG} ~/.config/tmux/
 	@echo "New tmux config installed. Install plugins with prefix+I"
 
-tmux_plugins:
-	git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-
-vim_conf: ${VIM_CONFIG}
-	ln -sf ${PWD}/${VIM_CONFIG} ~/.vimrc
+vim_conf: ${VIM_CONFIG} vim_plug
+	@ln -sf ${VIM_CONFIG} ~/.vimrc
 	@echo "New vim config installed. Install plugins with :PlugInstall"
 
-nvim_conf: ${VIM_CONFIG}
-	mkdir -p ~/.config/nvim/lua
-	ln -sf ${PWD}/${VIM_CONFIG} ~/.config/nvim/${VIM_CONFIG}
-	ln -sf ${PWD}/treesitter.lua ~/.config/nvim/lua/treesitter.lua
+nvim_conf: ${VIM_CONFIG} nvim_plug
+	@mkdir -p ~/.config/nvim/lua
+	@ln -sf ${VIM_CONFIG} ~/.config/nvim/
+	@ln -sf ${VIM_TREE} ~/.config/nvim/lua/
 	@echo "New nvim config installed. Install plugins with :PlugInstall"
 
 vim_plug:
-	curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+	@sh ${DOWNLOAD_VIMPLUG}
 
 nvim_plug:
-	sh -c "curl -fLo \
-		'${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/autoload/plug.vim' \
-		--create-dirs \
-		https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+	@sh ${DOWNLOAD_NVIMPLUG}
 
 ohmyzsh:
-	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-	git clone https://github.com/zsh-users/zsh-autosuggestions.git ~/.oh-my-zsh/plugins/zsh-autosuggestions
-	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/plugins/zsh-syntax-highlighting
+	sh ${DOWNLOAD_OMZ}
+
+tmux_plugins:
+	@sh ${DOWNLOAD_TPM}
 
