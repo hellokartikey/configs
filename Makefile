@@ -6,7 +6,7 @@ VIM_DIR = ${PWD}/vim
 
 VIM_CONFIG = ${VIM_DIR}/init.vim
 VIM_THEME = ${VIM_DIR}/16color.vim
-VIM_TREE = ${VIM_DIR}/tresitter.lua
+VIM_TREE = ${VIM_DIR}/treesitter.lua
 
 TMUX_CONFIG = ${TMUX_DIR}/tmux.conf
 
