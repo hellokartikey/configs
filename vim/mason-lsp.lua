@@ -28,6 +28,8 @@ require('trouble').setup({
 
 vim.cmd("set scl=no")
 
+vim.cmd("set pumheight=5")
+
 vim.diagnostic.config {
   virtual_text = false,
   signs = false,
