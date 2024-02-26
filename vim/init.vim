@@ -19,6 +19,8 @@
 "
 "   <leader>u   : Toggle Undotree
 "
+"   <leader>x   : Toggle Trouble
+"
 "   <leader>f   : Open FZF
 "   <leader>g   : Open FZF Buffers
 "
@@ -49,7 +51,26 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'christoomey/vim-system-copy'
 
 if has('nvim')
+
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+  Plug 'honza/vim-snippets'
+  Plug 'L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
+  Plug 'saadparwaiz1/cmp_luasnip'
+
+  Plug 'williamboman/mason.nvim'
+  Plug 'williamboman/mason-lspconfig.nvim'
+
+  Plug 'neovim/nvim-lspconfig'
+
+  Plug 'hrsh7th/nvim-cmp'
+  Plug 'hrsh7th/cmp-nvim-lsp'
+  Plug 'hrsh7th/cmp-buffer'
+
+  Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v3.x'}
+
+  Plug 'folke/trouble.nvim'
+
 endif
 
 call plug#end()
@@ -143,6 +164,8 @@ function! SetColorScheme()
   if &background == "dark"
     highlight Visual term=reverse cterm=none ctermbg=238
     highlight CursorLine term=reverse cterm=none ctermbg=236
+    highlight PMenu term=reverse cterm=none ctermbg=240 ctermfg=15
+    highlight PMenuSel cterm=bold ctermbg=232 ctermfg=12
   elseif &background == "light"
     highlight Visual term=reverse cterm=none ctermbg=251
     highlight CursorLine term=reverse cterm=none ctermbg=253
@@ -166,6 +189,9 @@ let g:NERDTreeMinimalUI = 1
 let g:NERDTreeMinimalMenu = 1
 let g:NERDTreeShowHidden = 1
 let g:NERDTreeIgnore = ['__pycache__$', '.git$']
+
+" Trouble Setup
+nnoremap <leader>x :TroubleToggle workspace_diagnostics<CR>
 
 " Silently open file as buffer
 let NERDTreeCustomOpenArgs = {
@@ -198,7 +224,13 @@ au BufRead,BufNewFile *.qrc setfiletype xml
 au BufRead,BufNewFile *.qml setfiletype qmljs
 
 if has('nvim')
-  " Treesitter Setup
+  " Treesitter Config
   lua require('treesitter')
+
+  " Mason Config
+  lua require('mason-lsp')
+
+  " Snippets
+  lua require('snippets')
 endif
 
