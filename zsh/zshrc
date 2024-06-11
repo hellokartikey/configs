@@ -39,3 +39,14 @@ function app () {
     ( $@ &> /dev/null & ) ;
 }
 
+# cmake compiler macros
+function cmake_clang() {
+  export CXX=/usr/bin/clang++
+  export CC=/usr/bin/clang
+}
+
+function cmake_gnu() {
+  export CXX=/usr/bin/g++
+  export CC=/usr/bin/gcc
+}
+
