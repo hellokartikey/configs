@@ -13,6 +13,7 @@
 "
 "   <leader>e   : Show whitespaces
 "   <leader>r   : Toggle relative line number
+"   <leader>l   : Toggle line numbers
 "
 "   <leader>t   : Toggle NERDTree
 "   <leader>y   : Find current buffer in NERDTree
@@ -149,6 +150,7 @@ set nowrap
 set scrolloff=8
 
 nnoremap <leader>r :set relativenumber!<CR>
+nnoremap <leader>l :set number!<CR>
 
 " Highlight Lines
 set colorcolumn=80,120
@@ -174,6 +176,8 @@ function! SetColorScheme()
   call lightline#colorscheme()
   call lightline#update()
 endfunction
+
+set notermguicolors
 command! SetColorScheme call SetColorScheme()
 
 autocmd OptionSet background SetColorScheme
