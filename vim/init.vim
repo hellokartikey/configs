@@ -59,16 +59,11 @@ if has('nvim')
   Plug 'L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
   Plug 'saadparwaiz1/cmp_luasnip'
 
-  Plug 'williamboman/mason.nvim'
-  Plug 'williamboman/mason-lspconfig.nvim'
-
   Plug 'neovim/nvim-lspconfig'
+  Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v3.x'}
 
   Plug 'hrsh7th/nvim-cmp'
   Plug 'hrsh7th/cmp-nvim-lsp'
-  Plug 'hrsh7th/cmp-buffer'
-
-  Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v3.x'}
 
   Plug 'folke/trouble.nvim'
 
@@ -81,6 +76,11 @@ let g:mapleader = ' '
 
 " Enable syntax highlight
 syntax on
+
+" Set Folding
+set nofoldenable
+set foldmethod=indent
+set foldcolumn=2
 
 " Enable mouse
 set mouse=a
@@ -195,7 +195,7 @@ let g:NERDTreeShowHidden = 1
 let g:NERDTreeIgnore = ['__pycache__$', '.git$']
 
 " Trouble Setup
-nnoremap <leader>x :TroubleToggle workspace_diagnostics<CR>
+nnoremap <leader>x :Trouble diagnostics toggle<CR>
 
 " Silently open file as buffer
 let NERDTreeCustomOpenArgs = {
@@ -230,6 +230,9 @@ au BufRead,BufNewFile *.qml setfiletype qmljs
 if has('nvim')
   " Treesitter Config
   lua require('treesitter')
+
+  " Trouble Config
+  lua require('error_menu')
 
   " Mason Config
   lua require('mason-lsp')

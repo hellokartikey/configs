@@ -9,6 +9,7 @@ VIM_THEME = ${VIM_DIR}/16color.vim
 VIM_TREE = ${VIM_DIR}/treesitter.lua
 VIM_LSP = ${VIM_DIR}/mason-lsp.lua
 VIM_CMP = ${VIM_DIR}/snippets.lua
+VIM_TROUBLE = ${VIM_DIR}/error_menu.lua
 
 TMUX_CONFIG = ${TMUX_DIR}/tmux.conf
 
@@ -42,6 +43,7 @@ nvim_conf: ${VIM_CONFIG} nvim_plug
 	@ln -sf ${VIM_TREE} ~/.config/nvim/lua/
 	@ln -sf ${VIM_LSP} ~/.config/nvim/lua/
 	@ln -sf ${VIM_CMP} ~/.config/nvim/lua/
+	@ln -sf ${VIM_TROUBLE} ~/.config/nvim/lua/
 	@echo "New nvim config installed. Install plugins with :PlugInstall"
 
 vim_plug:
