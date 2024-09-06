@@ -8,7 +8,20 @@ lsp_zero.on_attach(
 
 local lspconfig = require('lspconfig')
 
-lspconfig.clangd.setup({})
+-- C++
+lspconfig.clangd.setup{}
+lspconfig.neocmake.setup{}
+
+-- Python
+lspconfig.pylsp.setup{}
+
+-- HTML
+lspconfig.emmet_ls.setup{}
+lspconfig.html.setup{}
+lspconfig.css_variables.setup{}
+lspconfig.eslint.setup{}
+lspconfig.jsonls.setup{}
+lspconfig.htmx.setup{}
 
 vim.cmd("set pumheight=5")
 

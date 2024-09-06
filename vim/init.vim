@@ -25,6 +25,23 @@
 "   <leader>f   : Open FZF
 "   <leader>g   : Open FZF Buffers
 "
+" LSP BINDS
+"   <C-p>       : Move selection up, trigger lsp menu if not visible
+"   <C-n>       : Move selection down, trigger lsp menu if not visible
+"   <C-y>       : Confirm lsp selection
+"   <C-e>       : Close lsp menu
+"
+"   K           : Show hover information
+"   gd          : Jump to defintion
+"   gD          : Jump to declaration
+"   gi          : List all implementations
+"   go          : Jump to type definition
+"   gr          : List all references
+"   gs          : Display signature information
+"
+"   [d          : Move to previous diagnostic
+"   ]d          : Move to next diagnostic
+"
 " VISUAL
 "   >           : Indent selected lines one unit
 "   <           : Unindent selected lines one unit
@@ -80,7 +97,7 @@ syntax on
 " Set Folding
 set nofoldenable
 set foldmethod=indent
-set foldcolumn=2
+set foldcolumn=0
 
 " Enable mouse
 set mouse=a
@@ -162,26 +179,12 @@ set shiftwidth=2
 set expandtab
 
 " Colors
-function! SetColorScheme()
-  if &background == "dark"
-    highlight Visual term=reverse cterm=none ctermbg=238
-    highlight CursorLine term=reverse cterm=none ctermbg=236
-    highlight PMenu term=reverse cterm=none ctermbg=240 ctermfg=15
-    highlight PMenuSel cterm=bold ctermbg=232 ctermfg=12
-  elseif &background == "light"
-    highlight Visual term=reverse cterm=none ctermbg=251
-    highlight CursorLine term=reverse cterm=none ctermbg=253
-  endif
-  execute 'source' globpath(&rtp, 'autoload/lightline/colorscheme/16color.vim')
-  call lightline#colorscheme()
-  call lightline#update()
-endfunction
+highlight Visual term=reverse cterm=none ctermbg=238
+highlight CursorLine term=reverse cterm=none ctermbg=236
+highlight PMenu term=reverse cterm=none ctermbg=240 ctermfg=15
+highlight PMenuSel cterm=bold ctermbg=232 ctermfg=12
 
 set notermguicolors
-command! SetColorScheme call SetColorScheme()
-
-autocmd OptionSet background SetColorScheme
-autocmd VimEnter * SetColorScheme
 
 highlight! link CursorLineNR CursorLine
 highlight! link ColorColumn CursorLine

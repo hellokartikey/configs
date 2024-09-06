@@ -1,11 +1,6 @@
 -- Treesitter
 require("nvim-treesitter.configs").setup({
     ensure_installed = {
-      "arduino",
-      "bash",
-      "latex",
-      "dockerfile",
-      "lua",
       "c",
       "cpp",
       "cmake",
@@ -16,10 +11,6 @@ require("nvim-treesitter.configs").setup({
       "css",
       "javascript",
       "qmljs",
-      "vim",
-      "xml",
-      "toml",
-      "yaml"
     },
     sync_install = false,
     auto_install = false,
