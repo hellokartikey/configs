@@ -183,17 +183,17 @@ highlight PMenu term=reverse cterm=none ctermbg=240 ctermfg=15
 highlight PMenuSel cterm=bold ctermbg=232 ctermfg=12
 
 " Treesitter colors
-highlight @variable ctermfg=4
+highlight @variable cterm=none ctermfg=4
 highlight! link @variable.builtin @variable
 highlight! link @variable.parameter.builtin @variable
 
-highlight @constant ctermfg=3
+highlight @constant cterm=none ctermfg=3
 highlight! link @constant.builtin @constant
 
-highlight @module cterm=bold ctermfg=12
+highlight @module cterm=none ctermfg=12
 highlight! link @module.builtin @module
 
-highlight @string ctermfg=10
+highlight @string cterm=none ctermfg=10
 highlight! link @string.escape @string
 highlight! link @string.regexp @string
 highlight! link @string.special @string
@@ -209,11 +209,11 @@ highlight! link @number.float @constant
 highlight @type cterm=bold ctermfg=10
 highlight! link @type.builtin @type
 
-highlight @attribute ctermfg=11
+highlight @attribute cterm=none ctermfg=11
 highlight! link @attribute.builtin @attribute
-highlight @property ctermfg=10
+highlight @property cterm=none ctermfg=10
 
-highlight @function ctermfg=6
+highlight @function cterm=none ctermfg=6
 highlight! link @function.builtin @function
 highlight! link @constructor @function
 
@@ -221,12 +221,12 @@ highlight @keyword cterm=bold ctermfg=3
 
 highlight @label cterm=bold ctermfg=7
 
-highlight @operator ctermfg=7
+highlight @operator cterm=none ctermfg=7
 
-highlight @punctuation ctermfg=7
+highlight @punctuation cterm=none ctermfg=7
 highlight! link @punctuation.special @punctuation
 
-highlight @comment cterm=bold ctermfg=10
+highlight @comment cterm=bold ctermfg=7
 
 highlight! link CursorLineNR CursorLine
 highlight! link ColorColumn CursorLine
