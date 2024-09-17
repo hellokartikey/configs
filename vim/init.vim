@@ -49,8 +49,6 @@
 
 call plug#begin()
 
-Plug 'chriskempson/base16-vim'
-
 Plug 'itchyny/lightline.vim'
 
 Plug 'ap/vim-buftabline'
@@ -61,7 +59,6 @@ Plug 'tpope/vim-surround'
 
 Plug 'mbbill/undotree'
 
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
 Plug 'christoomey/vim-tmux-navigator'
@@ -69,7 +66,6 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'christoomey/vim-system-copy'
 
 if has('nvim')
-
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
   Plug 'honza/vim-snippets'
@@ -92,7 +88,9 @@ call plug#end()
 let g:mapleader = ' '
 
 " Enable syntax highlight
+set notermguicolors
 syntax on
+highlight clear
 
 " Set Folding
 set nofoldenable
@@ -184,7 +182,51 @@ highlight CursorLine term=reverse cterm=none ctermbg=236
 highlight PMenu term=reverse cterm=none ctermbg=240 ctermfg=15
 highlight PMenuSel cterm=bold ctermbg=232 ctermfg=12
 
-set notermguicolors
+" Treesitter colors
+highlight @variable ctermfg=4
+highlight! link @variable.builtin @variable
+highlight! link @variable.parameter.builtin @variable
+
+highlight @constant ctermfg=3
+highlight! link @constant.builtin @constant
+
+highlight @module cterm=bold ctermfg=12
+highlight! link @module.builtin @module
+
+highlight @string ctermfg=10
+highlight! link @string.escape @string
+highlight! link @string.regexp @string
+highlight! link @string.special @string
+highlight! link @string.special.url @string
+
+highlight! link @character @constant
+highlight! link @character.special @constant
+
+highlight! link @boolean @constant
+highlight! link @number @constant
+highlight! link @number.float @constant
+
+highlight @type cterm=bold ctermfg=10
+highlight! link @type.builtin @type
+
+highlight @attribute ctermfg=11
+highlight! link @attribute.builtin @attribute
+highlight @property ctermfg=10
+
+highlight @function ctermfg=6
+highlight! link @function.builtin @function
+highlight! link @constructor @function
+
+highlight @keyword cterm=bold ctermfg=3
+
+highlight @label cterm=bold ctermfg=7
+
+highlight @operator ctermfg=7
+
+highlight @punctuation ctermfg=7
+highlight! link @punctuation.special @punctuation
+
+highlight @comment cterm=bold ctermfg=10
 
 highlight! link CursorLineNR CursorLine
 highlight! link ColorColumn CursorLine
