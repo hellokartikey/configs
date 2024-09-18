@@ -20,5 +20,7 @@ cmp.setup({
   formatting = cmp_format
 })
 
+vim.opt.pumheight = 5
+
 require('luasnip.loaders.from_snipmate').lazy_load()
 

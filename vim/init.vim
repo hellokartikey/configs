@@ -162,7 +162,7 @@ nnoremap <leader>e :set list!<CR>
 " Lines
 set number
 set nowrap
-set scrolloff=8
+set scrolloff=5
 
 nnoremap <leader>r :set relativenumber!<CR>
 nnoremap <leader>l :set number!<CR>
@@ -181,52 +181,6 @@ highlight Visual term=reverse cterm=none ctermbg=238
 highlight CursorLine term=reverse cterm=none ctermbg=236
 highlight PMenu term=reverse cterm=none ctermbg=240 ctermfg=15
 highlight PMenuSel cterm=bold ctermbg=232 ctermfg=12
-
-" Treesitter colors
-highlight @variable cterm=none ctermfg=4
-highlight! link @variable.builtin @variable
-highlight! link @variable.parameter.builtin @variable
-
-highlight @constant cterm=none ctermfg=3
-highlight! link @constant.builtin @constant
-
-highlight @module cterm=none ctermfg=12
-highlight! link @module.builtin @module
-
-highlight @string cterm=none ctermfg=10
-highlight! link @string.escape @string
-highlight! link @string.regexp @string
-highlight! link @string.special @string
-highlight! link @string.special.url @string
-
-highlight! link @character @constant
-highlight! link @character.special @constant
-
-highlight! link @boolean @constant
-highlight! link @number @constant
-highlight! link @number.float @constant
-
-highlight @type cterm=bold ctermfg=10
-highlight! link @type.builtin @type
-
-highlight @attribute cterm=none ctermfg=11
-highlight! link @attribute.builtin @attribute
-highlight @property cterm=none ctermfg=10
-
-highlight @function cterm=none ctermfg=6
-highlight! link @function.builtin @function
-highlight! link @constructor @function
-
-highlight @keyword cterm=bold ctermfg=3
-
-highlight @label cterm=bold ctermfg=7
-
-highlight @operator cterm=none ctermfg=7
-
-highlight @punctuation cterm=none ctermfg=7
-highlight! link @punctuation.special @punctuation
-
-highlight @comment cterm=bold ctermfg=7
 
 highlight! link CursorLineNR CursorLine
 highlight! link ColorColumn CursorLine

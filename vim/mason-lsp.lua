@@ -3,6 +3,7 @@ local lsp_zero = require('lsp-zero')
 lsp_zero.on_attach(
   function(client, bufnr)
     lsp_zero.default_keymaps({ buffer = bufnr })
+    client.server_capabilities.semanticTokensProvider = nil
   end
 )
 
@@ -22,8 +23,6 @@ lspconfig.css_variables.setup{}
 lspconfig.eslint.setup{}
 lspconfig.jsonls.setup{}
 lspconfig.htmx.setup{}
-
-vim.cmd("set pumheight=5")
 
 vim.diagnostic.config {
   virtual_text = false,

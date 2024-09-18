@@ -18,4 +18,4 @@ require('trouble').setup({
   },
 })
 
-vim.cmd("set scl=no")
+vim.opt.scl = "no"
