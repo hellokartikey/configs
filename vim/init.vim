@@ -154,10 +154,15 @@ vnoremap < <gv
 vnoremap > >gv
 
 " Show whitespaces
-set listchars=tab:⇄\ ,eol:↵,space:.
-highlight! Whitespace term=none ctermfg=gray
+set listchars=tab:🡲\ ,eol:¶,space:•
+highlight! Whitespace term=none ctermfg=8
 highlight! link NonText Whitespace
+
 nnoremap <leader>e :set list!<CR>
+
+" Trailing spaces
+match ExtraWhitespace /\s\+$/
+highlight ExtraWhitespace ctermbg=9
 
 " Lines
 set number
