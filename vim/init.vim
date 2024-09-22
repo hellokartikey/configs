@@ -65,7 +65,10 @@ Plug 'christoomey/vim-tmux-navigator'
 
 Plug 'christoomey/vim-system-copy'
 
+Plug 'mg979/vim-visual-multi', {'branch': 'master'}
+
 if has('nvim')
+
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
   Plug 'honza/vim-snippets'
@@ -90,7 +93,6 @@ let g:mapleader = ' '
 " Enable syntax highlight
 set notermguicolors
 syntax on
-highlight clear
 
 " Set Folding
 set nofoldenable
@@ -161,8 +163,8 @@ highlight! link NonText Whitespace
 nnoremap <leader>e :set list!<CR>
 
 " Trailing spaces
-match ExtraWhitespace /\s\+$/
 highlight ExtraWhitespace ctermbg=9
+match ExtraWhitespace /\s\+$/
 
 " Lines
 set number
@@ -182,7 +184,7 @@ set shiftwidth=2
 set expandtab
 
 " Colors
-highlight Visual term=reverse cterm=none ctermbg=238
+highlight Visual term=reverse cterm=none ctermbg=7 ctermfg=0
 highlight CursorLine term=reverse cterm=none ctermbg=236
 highlight PMenu term=reverse cterm=none ctermbg=240 ctermfg=15
 highlight PMenuSel cterm=bold ctermbg=232 ctermfg=12
