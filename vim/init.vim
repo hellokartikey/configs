@@ -38,6 +38,7 @@
 "   go          : Jump to type definition
 "   gr          : List all references
 "   gs          : Display signature information
+"   gcc         : Comment a line
 "
 "   [d          : Move to previous diagnostic
 "   ]d          : Move to next diagnostic
@@ -57,6 +58,8 @@ Plug 'preservim/nerdtree'
 
 Plug 'tpope/vim-surround'
 
+Plug 'tpope/vim-commentary'
+
 Plug 'mbbill/undotree'
 
 Plug 'junegunn/fzf.vim'
@@ -64,8 +67,6 @@ Plug 'junegunn/fzf.vim'
 Plug 'christoomey/vim-tmux-navigator'
 
 Plug 'christoomey/vim-system-copy'
-
-Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 
 if has('nvim')
 
@@ -105,6 +106,7 @@ set mouse=a
 " Lightline
 let g:lightline = { 'colorscheme': '16color', }
 let g:lightline.enable = { 'statusline': 1, 'tabline': 0 }
+set laststatus=2
 set noshowmode
 
 " Switch tabs
@@ -122,8 +124,8 @@ nnoremap <leader>g :Buffers<CR>
 " Buftabline
 highlight! BufTabLineCurrent cterm=bold ctermbg=12
 highlight! BufTabLineActive cterm=bold ctermbg=8
-highlight! link BufTabLineHidden CursorLine
-highlight! link BufTabLineFill CursorLine
+highlight BufTabLineHidden ctermbg=0
+highlight BufTabLineFill ctermbg=0
 let g:buftabline_indicators = 1
 
 " File management
@@ -141,7 +143,11 @@ let g:undotree_DiffpanelHeight = 10
 let g:undotree_HelpLine = 0
 
 if has("persistent_undo")
-    let target_path = expand('~/.cache/undodir')
+    let target_path = expand('~/.cache/undodir/vim')
+
+    if has('nvim')
+      let target_path = expand('~/.cache/undodir')
+    endif
 
     if !isdirectory(target_path)
         call mkdir(target_path, "p", 0700)
@@ -154,6 +160,9 @@ endif
 " Indent
 vnoremap < <gv
 vnoremap > >gv
+
+" Search
+set ic
 
 " Show whitespaces
 set listchars=tab:🡲\ ,eol:¶,space:•
@@ -188,6 +197,17 @@ highlight Visual term=reverse cterm=none ctermbg=7 ctermfg=0
 highlight CursorLine term=reverse cterm=none ctermbg=236
 highlight PMenu term=reverse cterm=none ctermbg=240 ctermfg=15
 highlight PMenuSel cterm=bold ctermbg=232 ctermfg=12
+
+" Auto light/dark mode colors
+function! HKSetColorScheme()
+  if &background == 'light'
+    highlight CursorLine term=reverse cterm=none ctermbg=255
+  elseif &background == 'dark'
+    highlight CursorLine term=reverse cterm=none ctermbg=236
+  endif
+endfunction
+
+autocmd OptionSet background call HKSetColorScheme()
 
 highlight! link CursorLineNR CursorLine
 highlight! link ColorColumn CursorLine
