@@ -13,6 +13,9 @@ local lspconfig = require('lspconfig')
 lspconfig.clangd.setup{}
 lspconfig.neocmake.setup{}
 
+-- QML
+lspconfig.qmlls.setup{}
+
 -- Python
 lspconfig.pylsp.setup{}
 
