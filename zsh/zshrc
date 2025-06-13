@@ -1,6 +1,16 @@
+# oh-my-zsh
+export ZSH="$HOME/.oh-my-zsh"
+export DISABLE_MAGIC_FUNCTIONS="true"
+
+zstyle ':omz:update' mode disabled
+
+source $ZSH/oh-my-zsh.sh
+
 # Options
 setopt no_nomatch
 setopt nullglob
+setopt inc_append_history
+setopt share_history
 setopt PROMPT_SUBST
 
 bindkey -e
@@ -13,6 +23,7 @@ export PATH=$HOME/.local/bin:$PATH
 export PATH=/var/lib/flatpak/exports/bin:$PATH
 export PATH=$HOME/.local/share/flatpak/exports/bin:$PATH
 export PATH=$HOME/.cargo/bin:$PATH
+export PATH=$HOME/.local/go/bin:$PATH
 
 export FPATH=$HOME/.local/share/kde-builder/data/completions/zsh/:$FPATH
 
