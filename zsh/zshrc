@@ -94,22 +94,23 @@ export FZF_DEFAULT_COMMAND="fd --type f --strip-cwd-prefix --hidden --exclude '.
 
 # Plugins
 local syntax=$(find /usr/share/zsh* -name "zsh-syntax-highlighting.zsh")
-if [ -e $syntax ]; then
+if [ $syntax ] && [ -e $syntax ]; then
   source $syntax
 fi
 
 # change default compiler to clang
 cmake_clang
 
-# load tmux
-local tmux_sessions=$(tmux ls 2> /dev/null)
+function load_tmux () {
+  local tmux_sessions=$(tmux ls 2> /dev/null)
 
-if [ -z $TMUX ] && [ -z $CONTAINER_ID ]; then
-  if [ $tmux_sessions ]; then
-    local first=$(echo $tmux_sessions | head -n 1 | cut -d ':' -f 1)
-    tmux attach-session -dt $first \; new-window -c "$PWD"
-  else
-    tmux new-session -c "$PWD"
+  if [ -z $TMUX ] && [ -z $CONTAINER_ID ]; then
+    if [ $tmux_sessions ]; then
+      local first=$(echo $tmux_sessions | head -n 1 | cut -d ':' -f 1)
+      tmux attach-session -t $first \; new-window -c "$PWD"
+    else
+      tmux new-session -c "$PWD"
+    fi
+    exit
   fi
-  exit
-fi
+}
