@@ -116,35 +116,72 @@ function mkcd() {
   cd $@
 }
 
-function venv_name() {
-  [ $VIRTUAL_ENV ] && echo "%{$fg[white]%}🐍"$(basename $VIRTUAL_ENV)"$reset_color "
-}
-
-function container_name() {
-  [ $CONTAINER_ID ] && echo "%{$fg[cyan]%}📦"$CONTAINER_ID"$reset_color "
-}
-
-function git_branch_name() {
-  local branch=$(git symbolic-ref --short HEAD 2> /dev/null)
-  [ $branch ] && echo "%{$fg[yellow]%}💡"$branch"$reset_color "
+function path() {
+  echo "${PWD/#$HOME/~}"
 }
 
 # Theme
 VIRTUAL_ENV_DISABLE_PROMPT=1
 
-local path_view="%B%{$fg[blue]%}%~$reset_color "
-local return_code="%(?..%B$fg[red]%?$reset_color) "
+function _p_venv() {
+  [ $VIRTUAL_ENV ] && echo "$fg_bold[white]🐍$(basename $VIRTUAL_ENV)$reset_color "
+}
 
-if [ $(whoami) == root ]; then
-  local user_name="%B%{$fg[red]%}%n@%m%{$reset_color%} "
-  local symbol="# "
-else
-  local user_name="%B%{$fg[green]%}%n@%m%{$reset_color%} "
-  local symbol="$ "
-fi
+function _p_box() {
+  [ $CONTAINER_ID ] && echo "$fg_bold[cyan]📦$CONTAINER_ID$reset_color "
+}
 
-PROMPT='${user_name}$(container_name)$(venv_name)$(git_branch_name)${path_view}${return_code}
-${symbol}'
+function _p_git() {
+  local branch=$(git symbolic-ref --short HEAD 2> /dev/null)
+  [ $branch ] && echo "$fg_bold[yellow]💡$branch$reset_color "
+}
+
+function _p_dir() {
+  echo "$fg_bold[blue]$(basename $(path))$reset_color"
+}
+
+function _p_path() {
+  echo "$fg_bold[blue]$(path)$reset_color "
+}
+
+function _p_ret() {
+  echo "%(?..$fg_bold[red]%?$reset_color)"
+}
+
+function _p_sym() {
+  if [ $(whoami) == root ]; then
+    echo "$bold_color#$reset_color"
+  else
+    echo "$bold_color\$$reset_color"
+  fi
+}
+
+function _p_user_host() {
+  _p_user
+  printf "@"
+  printf "$fg_bold[magenta]$HOST$reset_color "
+}
+
+function _p_user() {
+  if [ $(whoami) == root ]; then
+    printf "$fg_bold[cyan]$SUDO_USER$reset_color"
+    printf " as "
+    printf "$fg_bold[red]$USER$reset_color"
+  else
+    printf "$fg_bold[cyan]$USER$reset_color"
+  fi
+}
+
+function _p_prompt() {
+  echo $(_p_sym)
+}
+
+function _p_line_1() {
+  echo $(_p_user_host) $(_p_box) $(_p_venv) $(_p_git) $(_p_dir) $(_p_ret)
+}
+
+PROMPT='%1{$(_p_line_1)%}
+%1{$(_p_prompt)%} '
 
 # fzf
 export FZF_DEFAULT_COMMAND="fd --type f --strip-cwd-prefix --hidden --exclude '.git'"
