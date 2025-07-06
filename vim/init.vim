@@ -4,8 +4,8 @@
 "   <SPACE>
 "
 " NORMAL
-"   <TAB>       : Move to next buffer
-"   <S-TAB>     : Move to prev buffer
+"   <leader>n   : Move to next buffer
+"   <leader>p   : Move to prev buffer
 "
 "   <leader>w   : Close current buffer
 "   <leader>s   : Update current buffer
@@ -14,16 +14,11 @@
 "   <leader>e   : Show whitespaces
 "   <leader>r   : Toggle relative line number
 "   <leader>l   : Toggle line numbers
-"
-"   <leader>t   : Toggle NERDTree
-"   <leader>y   : Find current buffer in NERDTree
+"   <leader>c   : Toggle cursor line
 "
 "   <leader>u   : Toggle Undotree
 "
 "   <leader>x   : Toggle Trouble
-"
-"   <leader>f   : Open FZF
-"   <leader>g   : Open FZF Buffers
 "
 " LSP BINDS
 "   <C-p>       : Move selection up, trigger lsp menu if not visible
@@ -50,19 +45,11 @@
 
 call plug#begin()
 
-Plug 'itchyny/lightline.vim'
-
-Plug 'ap/vim-buftabline'
-
-Plug 'preservim/nerdtree'
-
 Plug 'tpope/vim-surround'
 
 Plug 'tpope/vim-commentary'
 
 Plug 'mbbill/undotree'
-
-Plug 'junegunn/fzf.vim'
 
 Plug 'christoomey/vim-tmux-navigator'
 
@@ -93,40 +80,54 @@ let g:mapleader = ' '
 
 " Enable syntax highlight
 set notermguicolors
-syntax on
-
-" Set Folding
-set nofoldenable
-set foldmethod=indent
-set foldcolumn=0
 
 " Enable mouse
 set mouse=a
 
-" Lightline
-let g:lightline = { 'colorscheme': '16color', }
-let g:lightline.enable = { 'statusline': 1, 'tabline': 0 }
-set laststatus=2
-set noshowmode
+" Status Line
+highlight clear StatusLineNC
 
-" Switch tabs
-nnoremap <TAB> :bnext<CR>
-nnoremap <S-TAB> :bprevious<CR>
+set laststatus=2
+set statusline=
+set statusline+=\ %f       " filename
+set statusline+=\ %m       " is modified
+set statusline+=%=         " middle space
+set statusline+=%=         " right space
+set statusline+=%y         " filetype
+set statusline+=\ %5l:%-3c " line:col
+set statusline+=\ %P       " percentage
+set statusline+=\          " margin
+
+" Tab Line
+nnoremap <leader>n :bnext<CR>
+nnoremap <leader>p :bprevious<CR>
 nnoremap <leader>w :bdelete<CR>
 
-" FZF
-let g:fzf_vim = {}
-let g:fzf_layout = { 'down': '10' }
-let g:fzf_vim.preview_window = []
-nnoremap <leader>f :Files<CR>
-nnoremap <leader>g :Buffers<CR>
+highlight clear TabLineFill
+highlight clear TabLine
+highlight! link TabLineSel StatusLine
 
-" Buftabline
-highlight! BufTabLineCurrent cterm=bold ctermbg=12
-highlight! BufTabLineActive cterm=bold ctermbg=8
-highlight BufTabLineHidden ctermbg=0
-highlight BufTabLineFill ctermbg=0
-let g:buftabline_indicators = 1
+" TODO - Add scrolling support
+function HkTabLine()
+  let s = ''
+
+  for i in filter(range(1, bufnr('$')), 'buflisted(v:val)')
+    if i == bufnr()
+      let s ..= '%#TabLineSel#'
+    else
+      let s ..= '%#TabLine#'
+    endif
+
+    let s ..= ' ' .. bufname(i) .. ' '
+  endfor
+
+  let s ..= '%#TabLineFill#%T'
+
+  return s
+endfunction
+
+set showtabline=2
+set tabline=%!HkTabLine()
 
 " File management
 nnoremap <leader>s :update<CR>
@@ -162,12 +163,11 @@ vnoremap < <gv
 vnoremap > >gv
 
 " Search
-set ic
+set ignorecase
+set smartcase
 
 " Show whitespaces
 set listchars=tab:🡲\ ,eol:¶,space:•
-highlight! Whitespace term=none ctermfg=8
-highlight! link NonText Whitespace
 
 nnoremap <leader>e :set list!<CR>
 
@@ -176,16 +176,15 @@ highlight ExtraWhitespace ctermbg=9
 match ExtraWhitespace /\s\+$/
 
 " Lines
-set number
 set nowrap
-set scrolloff=5
+set scrolloff=3
 
 nnoremap <leader>r :set relativenumber!<CR>
 nnoremap <leader>l :set number!<CR>
 
 " Highlight Lines
 set colorcolumn=80,120
-set cursorline
+nnoremap <leader>c :set cursorline!<CR>
 
 " Tabs
 set tabstop=2
@@ -193,7 +192,8 @@ set shiftwidth=2
 set expandtab
 
 " Colors
-highlight Visual term=reverse cterm=none ctermbg=7 ctermfg=0
+highlight clear Visual
+highlight Visual cterm=reverse
 highlight CursorLine term=reverse cterm=none ctermbg=236
 highlight PMenu term=reverse cterm=none ctermbg=240 ctermfg=15
 highlight PMenuSel cterm=bold ctermbg=232 ctermfg=12
@@ -201,7 +201,7 @@ highlight PMenuSel cterm=bold ctermbg=232 ctermfg=12
 " Auto light/dark mode colors
 function! HKSetColorScheme()
   if &background == 'light'
-    highlight CursorLine term=reverse cterm=none ctermbg=255
+    highlight CursorLine term=reverse cterm=none ctermbg=0
   elseif &background == 'dark'
     highlight CursorLine term=reverse cterm=none ctermbg=236
   endif
@@ -212,48 +212,14 @@ autocmd OptionSet background call HKSetColorScheme()
 highlight! link CursorLineNR CursorLine
 highlight! link ColorColumn CursorLine
 
-" Tree Setup
-nnoremap <leader>t :NERDTreeToggle<CR>
-nnoremap <leader>y :NERDTreeFind<CR>
-let g:NERDTreeMinimalUI = 1
-let g:NERDTreeMinimalMenu = 1
-let g:NERDTreeShowHidden = 1
-let g:NERDTreeIgnore = ['__pycache__$', '.git$']
-
-" Trouble Setup
-nnoremap <leader>x :Trouble diagnostics toggle<CR>
-
-" Silently open file as buffer
-let NERDTreeCustomOpenArgs = {
-  \ 'file': {'reuse': 'all', 'where': 'p', 'keepopen': 1, 'stay': 1},
-  \ 'dir': {} }
-
-" Exit Vim when NERDTree is the only remaining window in the only tab
-autocmd BufEnter *
- \ if tabpagenr('$') == 1 &&
- \     winnr('$') == 1 &&
- \     exists('b:NERDTree') &&
- \     b:NERDTree.isTabTree()
- \   | quit |
- \ endif
-
-" Prevent other buffers from replacing the tree
-autocmd BufEnter *
-  \ if winnr() == winnr('h') &&
-  \     bufname('#') =~ 'NERD_tree_\d\+' &&
-  \     bufname('%') !~ 'NERD_tree_\d\+' &&
-  \     winnr('$') > 1
-  \   | let buf=bufnr()
-  \   | buffer#
-  \   | execute "normal! \<C-W>w"
-  \   | execute 'buffer'.buf |
-  \ endif
-
 " File types
 au BufRead,BufNewFile *.qrc setfiletype xml
 au BufRead,BufNewFile *.qml setfiletype qmljs
 
 if has('nvim')
+  " Trouble Setup
+  nnoremap <leader>x :Trouble diagnostics toggle<CR>
+
   " Treesitter Config
   lua require('treesitter')
 
@@ -266,4 +232,3 @@ if has('nvim')
   " Snippets
   lua require('snippets')
 endif
-
