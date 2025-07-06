@@ -10,11 +10,11 @@ lsp_zero.on_attach(
 local lspconfig = require('lspconfig')
 
 -- C++
-lspconfig.clangd.setup{}
-lspconfig.neocmake.setup{}
+lspconfig.clangd.setup{} -- dnf, apt, pacman
+lspconfig.neocmake.setup{} -- cargo
 
 -- QML
-lspconfig.qmlls.setup{}
+lspconfig.qmlls.setup{} -- dnf, apt, pacman
 
 -- Python
 lspconfig.pylsp.setup{}
@@ -28,7 +28,7 @@ lspconfig.jsonls.setup{}
 lspconfig.htmx.setup{}
 
 vim.diagnostic.config {
-  virtual_text = false,
+  virtual_text = true,
   signs = false,
-  underline = false,
+  underline = true,
 }
