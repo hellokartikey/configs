@@ -118,7 +118,13 @@ function HkTabLine()
       let s ..= '%#TabLine#'
     endif
 
-    let s ..= ' ' .. bufname(i) .. ' '
+    let s ..= ' '
+    if bufname(i) == ''
+      let s ..= '*'
+    else
+      let s ..= bufname(i)
+    endif
+    let s ..= ' '
   endfor
 
   let s ..= '%#TabLineFill#%T'
