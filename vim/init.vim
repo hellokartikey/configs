@@ -10,13 +10,14 @@
 "   <leader>w   : Close current buffer
 "   <leader>s   : Update current buffer
 "   <leader>o   : Open a buffer
+"   <leader>b   : Navigate buffers
 "
 "   <leader>e   : Show whitespaces
 "   <leader>r   : Toggle relative line number
 "   <leader>l   : Toggle line numbers
 "   <leader>c   : Toggle cursor line
-"
-"   <leader>u   : Toggle Undotree
+"   <leader>k   : Toggle vertical line
+"   <leader>h   : Toggle highlight
 "
 "   <leader>x   : Toggle Trouble
 "
@@ -46,14 +47,8 @@
 call plug#begin()
 
 Plug 'tpope/vim-surround'
-
 Plug 'tpope/vim-commentary'
-
-Plug 'mbbill/undotree'
-
 Plug 'christoomey/vim-tmux-navigator'
-
-Plug 'christoomey/vim-system-copy'
 
 if has('nvim')
 
@@ -75,18 +70,23 @@ endif
 
 call plug#end()
 
-" Leader key
+" General
+colorscheme default
+syntax off
 let g:mapleader = ' '
-
-" Enable syntax highlight
-set notermguicolors
-
-" Enable mouse
 set mouse=a
+set notermguicolors
+set clipboard=unnamedplus
+set tabstop=2
+set shiftwidth=2
+set expandtab
+set nowrap
+set scrolloff=3
+set showtabline=2
+set tabline=%!HkTabLine()
+match ExtraWhitespace /\s\+$/
 
 " Status Line
-highlight clear StatusLineNC
-
 set laststatus=2
 set statusline=
 set statusline+=\ %f       " filename
@@ -97,17 +97,28 @@ set statusline+=%y         " filetype
 set statusline+=\ %5l:%-3c " line:col
 set statusline+=\ %P       " percentage
 set statusline+=\          " margin
+set ignorecase
+set smartcase
+set listchars=tab:🡲\ ,eol:¶,space:•
 
-" Tab Line
+" Remaps
 nnoremap <leader>n :bnext<CR>
 nnoremap <leader>p :bprevious<CR>
 nnoremap <leader>w :bdelete<CR>
-
-highlight clear TabLineFill
-highlight clear TabLine
-highlight! link TabLineSel StatusLine
+nnoremap <leader>s :update<CR>
+nnoremap <leader>o :edit<space>
+nnoremap <leader>b :buffers<CR>:buffer *
+nnoremap <leader>e :set list!<CR>
+nnoremap <leader>r :set relativenumber!<CR>
+nnoremap <leader>l :set number!<CR>
+nnoremap <leader>c :set cursorline!<CR>
+nnoremap <leader>k :execute "set cc=" . (&cc == "" ? "80,120" : "")<CR>
+nnoremap <leader>h :TSToggle highlight<CR>
+vnoremap < <gv
+vnoremap > >gv
 
 " TODO - Add scrolling support
+" TODO - Move away from buffer tab line
 function HkTabLine()
   let s = ''
 
@@ -119,11 +130,13 @@ function HkTabLine()
     endif
 
     let s ..= ' '
+
     if bufname(i) == ''
       let s ..= '*'
     else
       let s ..= bufname(i)
     endif
+
     let s ..= ' '
   endfor
 
@@ -132,89 +145,17 @@ function HkTabLine()
   return s
 endfunction
 
-set showtabline=2
-set tabline=%!HkTabLine()
-
-" File management
-nnoremap <leader>s :update<CR>
-nnoremap <leader>o :edit<space>
-
-" Undotree
-nnoremap <leader>u :UndotreeToggle<CR>
-let g:undotree_WindowLayout = 3
-let g:undotree_SetFocusWhenToggle = 1
-let g:undotree_ShortIndicators = 1
-let g:undotree_ShortIndicators = 1
-let g:undotree_SplitWidth = 30
-let g:undotree_DiffpanelHeight = 10
-let g:undotree_HelpLine = 0
-
-if has("persistent_undo")
-    let target_path = expand('~/.cache/undodir/vim')
-
-    if has('nvim')
-      let target_path = expand('~/.cache/undodir')
-    endif
-
-    if !isdirectory(target_path)
-        call mkdir(target_path, "p", 0700)
-    endif
-
-    let &undodir=target_path
-    set undofile
-endif
-
-" Indent
-vnoremap < <gv
-vnoremap > >gv
-
-" Search
-set ignorecase
-set smartcase
-
-" Show whitespaces
-set listchars=tab:🡲\ ,eol:¶,space:•
-
-nnoremap <leader>e :set list!<CR>
-
-" Trailing spaces
-highlight ExtraWhitespace ctermbg=9
-match ExtraWhitespace /\s\+$/
-
-" Lines
-set nowrap
-set scrolloff=3
-
-nnoremap <leader>r :set relativenumber!<CR>
-nnoremap <leader>l :set number!<CR>
-
-" Highlight Lines
-set colorcolumn=80,120
-nnoremap <leader>c :set cursorline!<CR>
-
-" Tabs
-set tabstop=2
-set shiftwidth=2
-set expandtab
-
 " Colors
+highlight clear TabLineFill
+highlight clear TabLine
+highlight! link TabLineSel StatusLine
+highlight ExtraWhitespace ctermbg=9
+highlight clear StatusLineNC
 highlight clear Visual
 highlight Visual cterm=reverse
 highlight CursorLine term=reverse cterm=none ctermbg=236
 highlight PMenu term=reverse cterm=none ctermbg=240 ctermfg=15
 highlight PMenuSel cterm=bold ctermbg=232 ctermfg=12
-
-" Auto light/dark mode colors
-function! HKSetColorScheme()
-  if &background == 'light'
-    highlight CursorLine term=reverse cterm=none ctermbg=0
-  elseif &background == 'dark'
-    highlight CursorLine term=reverse cterm=none ctermbg=236
-  endif
-endfunction
-
-autocmd OptionSet background call HKSetColorScheme()
-
 highlight! link CursorLineNR CursorLine
 highlight! link ColorColumn CursorLine
 
