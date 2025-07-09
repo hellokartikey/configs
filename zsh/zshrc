@@ -184,7 +184,7 @@ PROMPT='%1{$(_p_line_1)%}
 %1{$(_p_prompt)%} '
 
 # fzf
-export FZF_DEFAULT_COMMAND="fd --type f --strip-cwd-prefix --hidden --exclude '.git'"
+export FZF_DEFAULT_COMMAND="fd --type f --strip-cwd-prefix --hidden"
 
 # Plugins
 local syntax=$(find /usr/share/zsh* -name "zsh-syntax-highlighting.zsh")
