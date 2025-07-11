@@ -1,8 +1,43 @@
--- Constants
-local COLUMN = "80"
-
 -- Plugins
-require("lazy_config")
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+      { out, "WarningMsg" },
+      { "\nPress any key to exit..." },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
+  end
+end
+
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+  spec = {
+    {
+      "mason-org/mason-lspconfig.nvim",
+      opts = {},
+      dependencies = {
+        {
+          "mason-org/mason.nvim",
+          opts = {},
+        },
+        "neovim/nvim-lspconfig",
+      },
+    },
+
+    {
+      "nvim-treesitter/nvim-treesitter",
+      branch = "master",
+      lazy = false,
+      build = ":TSUpdate"
+    },
+  },
+})
 
 require("nvim-treesitter.configs").setup({ highlight = { enable = true, }, })
 
@@ -68,6 +103,32 @@ local function fd(auto_open)
     end)
 end
 
+-- Options
+vim.o.termguicolors = false
+vim.o.wrap = false
+vim.o.shiftwidth = 2
+vim.o.tabstop = 2
+vim.o.expandtab = true
+vim.o.scrolloff = 5
+vim.o.ignorecase = true
+vim.o.smartcase = true
+vim.o.listchars = "tab:> ,eol:$,space:-"
+vim.o.signcolumn = "no"
+vim.o.foldenable = true
+vim.o.foldlevel = 100
+vim.o.foldmethod = "expr"
+vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.o.pumheight = 5
+vim.o.pumwidth = 20
+
+vim.g.netrw_banner = false
+
+vim.diagnostic.config({ virtual_text = true })
+
+vim.api.nvim_create_autocmd("ColorScheme", { callback = reset_bg })
+vim.cmd.colorscheme("vim")
+vim.cmd.match("Error", [[/\s\+$/]])
+
 -- Remaps
 vim.g.mapleader = " "
 
@@ -83,8 +144,9 @@ vim.keymap.set("n", "<leader>w", vim.cmd.bdelete)
 vim.keymap.set("n", "<leader>n", vim.cmd.bnext)
 vim.keymap.set("n", "<leader>p", vim.cmd.bprev)
 vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
-vim.keymap.set("v", "<leader>[", "<gv")
-vim.keymap.set("v", "<leader>]", ">gv")
+
+vim.keymap.set("v", "<", "<gv")
+vim.keymap.set("v", ">", ">gv")
 
 vim.keymap.set("n", "<leader>co", vim.cmd.copen)
 vim.keymap.set("n", "<leader>cc", vim.cmd.cc)
@@ -104,20 +166,6 @@ vim.keymap.set("n", "<leader>tr", o_toggle("relativenumber"))
 vim.keymap.set("n", "<leader>tl", o_toggle("number"))
 vim.keymap.set("n", "<leader>tc", o_toggle("cursorline"))
 vim.keymap.set("n", "<leader>tk", o_cycle("colorcolumn", "", "80"))
-
--- Options
-vim.o.termguicolors = false
-vim.o.wrap = false
-vim.o.shiftwidth = 2
-vim.o.tabstop = 2
-vim.o.expandtab = true
-vim.o.scrolloff = 5
-vim.o.ignorecase = true
-vim.o.smartcase = true
-vim.o.listchars = "tab:> ,eol:$,space:-"
-
-vim.g.netrw_banner = false
-
-vim.api.nvim_create_autocmd("ColorScheme", { callback = reset_bg })
-vim.cmd.colorscheme("vim")
-vim.cmd.match("Error", [[/\s\+$/]])
+vim.keymap.set("n", "<leader>te", function()
+  vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })
+end)
