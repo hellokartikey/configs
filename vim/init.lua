@@ -23,12 +23,7 @@ require("lazy").setup({
       "neovim/nvim-lspconfig",
       },
     },
-
-    { "nvim-treesitter/nvim-treesitter",
-      branch = "master",
-      lazy = false,
-      build = ":TSUpdate"
-    },
+    { "nvim-treesitter/nvim-treesitter", branch = "master", lazy = false, build = ":TSUpdate" },
   },
 })
 
@@ -85,7 +80,7 @@ local function fd_string(inp)
     end
   end
 
-  vim.api.nvim_buf_create_user_command(0, "Open", open_range, { nargs = 0, range = true })
+  vim.api.nvim_buf_create_user_command(0, "Open", open_range, { range = true })
 
   vim.keymap.set("n", "O", [[ggVG:Open<cr>]], { buffer = true })
   vim.keymap.set({"n", "v"}, "o", [[:Open<cr>]], { buffer = true })
@@ -98,6 +93,16 @@ end
 
 local function fd(opts)
   fd_string(opts.fargs[1])
+end
+
+local function rg(opts)
+  local pattern = table.concat(opts.fargs, " ")
+  if pattern == "" then return end
+
+  exec_string("rg --vimgrep '" .. pattern .. "'")
+  vim.fn.setreg("/", pattern)
+  vim.o.hlsearch = true
+  vim.cmd.lbuffer()
 end
 
 -- Options
@@ -128,6 +133,7 @@ vim.cmd.colorscheme("vim")
 vim.cmd.match("Error", [[/\s\+$/]])
 
 -- Commands
+vim.api.nvim_create_user_command("Rg", rg, { nargs = '+' })
 vim.api.nvim_create_user_command("Fd", fd, { nargs = '?' })
 vim.api.nvim_create_user_command("Exec", exec, { nargs = '+' })
 vim.api.nvim_create_user_command("Scratch", scratch, { nargs = 0 })
@@ -195,3 +201,4 @@ vim.keymap.set("n", "<leader>ft", [[:Explore]])
 vim.keymap.set("n", "<leader>fe", [[:Exec<space>]])
 vim.keymap.set("n", "<leader>fs", [[:Scratch<cr>]])
 vim.keymap.set("n", "<leader>fd", [[:Fd<space>]])
+vim.keymap.set("n", "<leader>fr", [[:Rg<space>]])
