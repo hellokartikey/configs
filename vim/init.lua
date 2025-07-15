@@ -18,20 +18,13 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   spec = {
-    {
-      "mason-org/mason-lspconfig.nvim",
-      opts = {},
-      dependencies = {
-        {
-          "mason-org/mason.nvim",
-          opts = {},
-        },
-        "neovim/nvim-lspconfig",
+    { "mason-org/mason-lspconfig.nvim", opts = {}, dependencies = {
+      { "mason-org/mason.nvim", opts = {}, },
+      "neovim/nvim-lspconfig",
       },
     },
 
-    {
-      "nvim-treesitter/nvim-treesitter",
+    { "nvim-treesitter/nvim-treesitter",
       branch = "master",
       lazy = false,
       build = ":TSUpdate"
@@ -61,46 +54,50 @@ local function o_toggle(opt)
   return o_cycle(opt, true, false)
 end
 
+local function toggle_diagnostic()
+  vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })
+end
+
 local function scratch()
   vim.cmd.enew()
   vim.bo.buftype = "nofile"
   vim.bo.bufhidden = "wipe"
 end
 
-local function command(cmd)
+local function exec_string(cmd)
   if cmd == nil or cmd == "" then return end
   scratch()
   vim.fn.setbufline(vim.fn.bufname(), "$", vim.fn.systemlist(cmd))
 end
 
-local function exec(prefix)
-  vim.ui.input({ prompt = "cmd > " }, command)
+local function exec(opts)
+  exec_string(table.concat(opts.fargs, " "))
 end
 
-local function fd(auto_open)
-  vim.ui.input({ prompt = "fd > " }, function(inp)
-      if inp == nil then return end
-      command("fd --type file " .. inp)
+local function fd_string(inp)
+  if inp == nil then inp = "" end
+  exec_string("fd --type file " .. inp)
 
-      local function open_range(from, to)
-        return function()
-          lines = vim.fn.getline(from, to)
-          for _, line in pairs(lines) do
-            vim.cmd.edit(line)
-          end
-        end
-      end
+  local function open_range(opts)
+    lines = vim.fn.getline(opts.line1, opts.line2)
+    for _, line in pairs(lines) do
+      vim.cmd.edit(line)
+    end
+  end
 
-      vim.keymap.set("n", "O", open_range(0, "$"), { buffer = true })
-      vim.keymap.set("n", "o", open_range(".", "."), { buffer = true })
-      -- FIXME - vim.keymap.set("v", "o", open_range(""<", "">"), { buffer = true })
+  vim.api.nvim_buf_create_user_command(0, "Open", open_range, { nargs = 0, range = true })
 
-      if vim.fn.line(".") == vim.fn.line("$") then
-        print("single line")
-        open_range(".", ".")()
-        return
-      end
-    end)
+  vim.keymap.set("n", "O", [[ggVG:Open<cr>]], { buffer = true })
+  vim.keymap.set({"n", "v"}, "o", [[:Open<cr>]], { buffer = true })
+
+  if vim.fn.line("$") == 1 then
+    vim.cmd.Open()
+    return
+  end
+end
+
+local function fd(opts)
+  fd_string(opts.fargs[1])
 end
 
 -- Options
@@ -122,6 +119,7 @@ vim.o.pumheight = 5
 vim.o.pumwidth = 20
 
 vim.g.netrw_banner = false
+vim.g.netrw_sort_options = "i"
 
 vim.diagnostic.config({ virtual_text = true })
 
@@ -129,43 +127,71 @@ vim.api.nvim_create_autocmd("ColorScheme", { callback = reset_bg })
 vim.cmd.colorscheme("vim")
 vim.cmd.match("Error", [[/\s\+$/]])
 
+-- Commands
+vim.api.nvim_create_user_command("Fd", fd, { nargs = '?' })
+vim.api.nvim_create_user_command("Exec", exec, { nargs = '+' })
+vim.api.nvim_create_user_command("Scratch", scratch, { nargs = 0 })
+
 -- Remaps
 vim.g.mapleader = " "
 
-vim.keymap.set("n", "<leader>ft", vim.cmd.Explore)
-vim.keymap.set("n", "<leader>fe", exec)
-vim.keymap.set("n", "<leader>fs", scratch)
-vim.keymap.set("n", "<leader>fd", fd)
-
-vim.keymap.set("n", "<leader>s", vim.cmd.update)
-vim.keymap.set("n", "<leader>o", ":edit<space>")
-vim.keymap.set("n", "<leader>b", ":buffers<cr>:buffer<space>")
-vim.keymap.set("n", "<leader>w", vim.cmd.bdelete)
-vim.keymap.set("n", "<leader>n", vim.cmd.bnext)
-vim.keymap.set("n", "<leader>p", vim.cmd.bprev)
-vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
-
 vim.keymap.set("v", "<", "<gv")
 vim.keymap.set("v", ">", ">gv")
+vim.keymap.set("i", "<s-tab>", [[<c-v><tab>]])
 
-vim.keymap.set("n", "<leader>co", vim.cmd.copen)
-vim.keymap.set("n", "<leader>cc", vim.cmd.cc)
-vim.keymap.set("n", "<leader>cb", vim.cmd.cbuffer)
-vim.keymap.set("n", "<leader>cn", vim.cmd.cnext)
-vim.keymap.set("n", "<leader>cp", vim.cmd.cprev)
-
-vim.keymap.set("n", "<leader>lo", vim.cmd.lopen)
-vim.keymap.set("n", "<leader>ll", vim.cmd.ll)
-vim.keymap.set("n", "<leader>lb", vim.cmd.lbuffer)
-vim.keymap.set("n", "<leader>ln", vim.cmd.lnext)
-vim.keymap.set("n", "<leader>lp", vim.cmd.lprev)
-
-vim.keymap.set("n", "<leader>th", ":TSToggle highlight<cr>")
+vim.keymap.set("n", "<leader>th", [[:TSToggle highlight<cr>]])
 vim.keymap.set("n", "<leader>tw", o_toggle("list"))
 vim.keymap.set("n", "<leader>tr", o_toggle("relativenumber"))
 vim.keymap.set("n", "<leader>tl", o_toggle("number"))
 vim.keymap.set("n", "<leader>tc", o_toggle("cursorline"))
 vim.keymap.set("n", "<leader>tk", o_cycle("colorcolumn", "", "80"))
-vim.keymap.set("n", "<leader>te", function()
-  vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })
-end)
+vim.keymap.set("n", "<leader>te", toggle_diagnostic)
+
+vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
+
+vim.keymap.set("n", "<leader>h", [[:wincmd h<cr>]])
+vim.keymap.set("n", "<leader>j", [[:wincmd j<cr>]])
+vim.keymap.set("n", "<leader>k", [[:wincmd k<cr>]])
+vim.keymap.set("n", "<leader>l", [[:wincmd l<cr>]])
+
+vim.keymap.set("n", "<leader>H", [[<c-W>H]])
+vim.keymap.set("n", "<leader>J", [[<c-W>J]])
+vim.keymap.set("n", "<leader>K", [[<c-W>K]])
+vim.keymap.set("n", "<leader>L", [[<c-W>L]])
+
+vim.keymap.set("n", "<leader>-", [[:resize -1<cr>]])
+vim.keymap.set("n", "<leader>=", [[:resize +1<cr>]])
+
+vim.keymap.set("n", "<leader>_", [[:resize<cr>]])
+vim.keymap.set("n", "<leader>|", [[:vertical resize<cr>]])
+
+vim.keymap.set("n", "<leader>,", [[:vertical resize -1<cr>]])
+vim.keymap.set("n", "<leader>.", [[:vertical resize +1<cr>]])
+
+vim.keymap.set("n", "<leader>s", [[:update<cr>]])
+vim.keymap.set("n", "<leader>o", [[:edit<space>]])
+vim.keymap.set("n", "<leader>q", [[:quit<cr>]])
+
+vim.keymap.set("n", "<leader>b", [[:buffers<cr>:buffer<space>]])
+vim.keymap.set("n", "<leader>w", [[:bdelete<cr>]])
+vim.keymap.set("n", "<leader>n", [[:bnext<cr>]])
+vim.keymap.set("n", "<leader>p", [[:bprev<cr>]])
+
+vim.keymap.set("n", "<leader>co", [[:copen<cr>]])
+vim.keymap.set("n", "<leader>cc", [[:cc<cr>]])
+vim.keymap.set("n", "<leader>cb", [[:cbuffer<cr>]])
+vim.keymap.set("n", "<leader>cw", [[:cclose<cr>]])
+vim.keymap.set("n", "<leader>cn", [[:cnext<cr>]])
+vim.keymap.set("n", "<leader>cp", [[:cprev<cr>]])
+
+vim.keymap.set("n", "<leader>vo", [[:lopen<cr>]])
+vim.keymap.set("n", "<leader>vv", [[:ll<cr>]])
+vim.keymap.set("n", "<leader>vb", [[:lbuffer<cr>]])
+vim.keymap.set("n", "<leader>vw", [[:lclose<cr>]])
+vim.keymap.set("n", "<leader>vn", [[:lnext<cr>]])
+vim.keymap.set("n", "<leader>vp", [[:lprev<cr>]])
+
+vim.keymap.set("n", "<leader>ft", [[:Explore]])
+vim.keymap.set("n", "<leader>fe", [[:Exec<space>]])
+vim.keymap.set("n", "<leader>fs", [[:Scratch<cr>]])
+vim.keymap.set("n", "<leader>fd", [[:Fd<space>]])
