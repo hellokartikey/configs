@@ -27,12 +27,16 @@ require("lazy").setup({
   },
 })
 
-require("nvim-treesitter.configs").setup({ highlight = { enable = true, }, })
+require('nvim-treesitter.configs').setup({ highlight = { enable = true }})
 
 -- Functions
 local function reset_bg()
-  vim.cmd.highlight({ "Normal", "guibg=none", "ctermbg=none" })
-  vim.cmd.highlight({ "NonText", "guibg=none", "ctermbg=none" })
+  vim.cmd.highlight({"Normal", "guibg=none", "ctermbg=none"})
+  vim.cmd.highlight({"NormalNC", "guibg=none", "ctermbg=none"})
+  vim.cmd.highlight({"EndOfBuffer", "guibg=none", "ctermbg=none"})
+
+  vim.cmd.highlight({"StatusLine", "ctermfg=7", "ctermbg=0", "cterm=reverse"})
+  vim.cmd.highlight({"StatusLineNC", "ctermfg=8", "ctermbg=0", "cterm=reverse"})
 end
 
 local function o_cycle(opt, on, off)
@@ -80,10 +84,10 @@ local function fd_string(inp)
     end
   end
 
-  vim.api.nvim_buf_create_user_command(0, "Open", open_range, { range = true })
+  vim.api.nvim_buf_create_user_command(0, "Line", open_range, { range = true })
 
-  vim.keymap.set("n", "O", [[ggVG:Open<cr>]], { buffer = true })
-  vim.keymap.set({"n", "v"}, "o", [[:Open<cr>]], { buffer = true })
+  vim.keymap.set("n", "O", [[ggVG:Line<CR>]], { buffer = true })
+  vim.keymap.set({"n", "v"}, "o", [[:Line<CR>]], { buffer = true })
 
   if vim.fn.line("$") == 1 then
     vim.cmd.Open()
@@ -107,19 +111,28 @@ end
 
 -- Options
 vim.o.termguicolors = false
+
 vim.o.wrap = false
 vim.o.shiftwidth = 2
 vim.o.tabstop = 2
 vim.o.expandtab = true
-vim.o.scrolloff = 5
+
+vim.o.scrolloff = 10
+vim.o.sidescrolloff = 20
+
 vim.o.ignorecase = true
 vim.o.smartcase = true
 vim.o.listchars = "tab:> ,eol:$,space:-"
 vim.o.signcolumn = "no"
+
 vim.o.foldenable = true
 vim.o.foldlevel = 100
 vim.o.foldmethod = "expr"
 vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+
+vim.o.splitbelow = true
+vim.o.splitright = true
+
 vim.o.pumheight = 5
 vim.o.pumwidth = 20
 
@@ -141,11 +154,14 @@ vim.api.nvim_create_user_command("Scratch", scratch, { nargs = 0 })
 -- Remaps
 vim.g.mapleader = " "
 
-vim.keymap.set("v", "<", "<gv")
-vim.keymap.set("v", ">", ">gv")
-vim.keymap.set("i", "<s-tab>", [[<c-v><tab>]])
+vim.keymap.set("v", "<", [[<gv]])
+vim.keymap.set("v", ">", [[>gv]])
+vim.keymap.set("v", "-", [[:m '<-2<CR>gv=gv]])
+vim.keymap.set("v", "=", [[:m '>+1<CR>gv=gv]])
+vim.keymap.set("i", "<S-TAB>", [[<C-v><TAB>]])
+vim.keymap.set("n", "gd", vim.lsp.buf.definition)
 
-vim.keymap.set("n", "<leader>th", [[:TSToggle highlight<cr>]])
+vim.keymap.set("n", "<leader>th", [[:TSToggle highlight<CR>]])
 vim.keymap.set("n", "<leader>tw", o_toggle("list"))
 vim.keymap.set("n", "<leader>tr", o_toggle("relativenumber"))
 vim.keymap.set("n", "<leader>tl", o_toggle("number"))
@@ -155,50 +171,47 @@ vim.keymap.set("n", "<leader>te", toggle_diagnostic)
 
 vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
 
-vim.keymap.set("n", "<leader>h", [[:wincmd h<cr>]])
-vim.keymap.set("n", "<leader>j", [[:wincmd j<cr>]])
-vim.keymap.set("n", "<leader>k", [[:wincmd k<cr>]])
-vim.keymap.set("n", "<leader>l", [[:wincmd l<cr>]])
+vim.keymap.set("n", "<leader>ws", [[<C-w>s:Scratch<CR>]])
+vim.keymap.set("n", "<leader>wv", [[<C-w>v:Scratch<CR>]])
 
-vim.keymap.set("n", "<leader>H", [[<c-W>H]])
-vim.keymap.set("n", "<leader>J", [[<c-W>J]])
-vim.keymap.set("n", "<leader>K", [[<c-W>K]])
-vim.keymap.set("n", "<leader>L", [[<c-W>L]])
+vim.keymap.set("n", "<leader>wh", [[<C-w>h]])
+vim.keymap.set("n", "<leader>wj", [[<C-w>j]])
+vim.keymap.set("n", "<leader>wk", [[<C-w>k]])
+vim.keymap.set("n", "<leader>wl", [[<C-w>l]])
 
-vim.keymap.set("n", "<leader>-", [[:resize -1<cr>]])
-vim.keymap.set("n", "<leader>=", [[:resize +1<cr>]])
+vim.keymap.set("n", "<leader>wH", [[<C-w>H]])
+vim.keymap.set("n", "<leader>wJ", [[<C-w>J]])
+vim.keymap.set("n", "<leader>wK", [[<C-w>K]])
+vim.keymap.set("n", "<leader>wL", [[<C-w>L]])
 
-vim.keymap.set("n", "<leader>_", [[:resize<cr>]])
-vim.keymap.set("n", "<leader>|", [[:vertical resize<cr>]])
+vim.keymap.set("n", "<leader>w-", [[<C-w>-]])
+vim.keymap.set("n", "<leader>w=", [[<C-w>+]])
+vim.keymap.set("n", "<leader>w,", [[<C-w><]])
+vim.keymap.set("n", "<leader>w.", [[<C-w>>]])
+vim.keymap.set("n", "<leader>w_", [[<C-w>_]])
+vim.keymap.set("n", "<leader>w|", [[<C-w>|]])
+vim.keymap.set("n", "<leader>w+", [[<C-w>=]])
 
-vim.keymap.set("n", "<leader>,", [[:vertical resize -1<cr>]])
-vim.keymap.set("n", "<leader>.", [[:vertical resize +1<cr>]])
+vim.keymap.set("n", "<leader>q", [[:quit<CR>]])
+vim.keymap.set("n", "<leader>s", [[:update<CR>]])
+vim.keymap.set("n", "<leader>o", [[:edit ]])
+vim.keymap.set("n", "<leader>b", [[:buffers<CR>:buffer ]])
+vim.keymap.set("n", "<leader>d", [[:bdelete<CR>]])
+vim.keymap.set("n", "<leader>n", [[:bnext<CR>]])
+vim.keymap.set("n", "<leader>p", [[:bprev<CR>]])
 
-vim.keymap.set("n", "<leader>s", [[:update<cr>]])
-vim.keymap.set("n", "<leader>o", [[:edit<space>]])
-vim.keymap.set("n", "<leader>q", [[:quit<cr>]])
+vim.keymap.set("n", "<leader>co", [[:copen<CR>]])
+vim.keymap.set("n", "<leader>cc", [[:cc<CR>]])
+vim.keymap.set("n", "<leader>cn", [[:cnext<CR>]])
+vim.keymap.set("n", "<leader>cp", [[:cprev<CR>]])
 
-vim.keymap.set("n", "<leader>b", [[:buffers<cr>:buffer<space>]])
-vim.keymap.set("n", "<leader>w", [[:bdelete<cr>]])
-vim.keymap.set("n", "<leader>n", [[:bnext<cr>]])
-vim.keymap.set("n", "<leader>p", [[:bprev<cr>]])
+vim.keymap.set("n", "<leader>vo", [[:lopen<CR>]])
+vim.keymap.set("n", "<leader>vv", [[:ll<CR>]])
+vim.keymap.set("n", "<leader>vn", [[:lnext<CR>]])
+vim.keymap.set("n", "<leader>vp", [[:lprev<CR>]])
 
-vim.keymap.set("n", "<leader>co", [[:copen<cr>]])
-vim.keymap.set("n", "<leader>cc", [[:cc<cr>]])
-vim.keymap.set("n", "<leader>cb", [[:cbuffer<cr>]])
-vim.keymap.set("n", "<leader>cw", [[:cclose<cr>]])
-vim.keymap.set("n", "<leader>cn", [[:cnext<cr>]])
-vim.keymap.set("n", "<leader>cp", [[:cprev<cr>]])
-
-vim.keymap.set("n", "<leader>vo", [[:lopen<cr>]])
-vim.keymap.set("n", "<leader>vv", [[:ll<cr>]])
-vim.keymap.set("n", "<leader>vb", [[:lbuffer<cr>]])
-vim.keymap.set("n", "<leader>vw", [[:lclose<cr>]])
-vim.keymap.set("n", "<leader>vn", [[:lnext<cr>]])
-vim.keymap.set("n", "<leader>vp", [[:lprev<cr>]])
-
-vim.keymap.set("n", "<leader>ft", [[:Explore]])
-vim.keymap.set("n", "<leader>fe", [[:Exec<space>]])
-vim.keymap.set("n", "<leader>fs", [[:Scratch<cr>]])
-vim.keymap.set("n", "<leader>fd", [[:Fd<space>]])
-vim.keymap.set("n", "<leader>fr", [[:Rg<space>]])
+vim.keymap.set("n", "<leader>ft", [[:Explore<CR>]])
+vim.keymap.set("n", "<leader>fe", [[:Exec ]])
+vim.keymap.set("n", "<leader>fs", [[:Scratch<CR>]])
+vim.keymap.set("n", "<leader>fd", [[:Fd ]])
+vim.keymap.set("n", "<leader>fr", [[:Rg ]])
