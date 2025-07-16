@@ -37,14 +37,17 @@ local function reset_bg()
 
   vim.cmd.highlight({"StatusLine", "ctermfg=7", "ctermbg=0", "cterm=reverse"})
   vim.cmd.highlight({"StatusLineNC", "ctermfg=8", "ctermbg=0", "cterm=reverse"})
+
+  vim.cmd.highlight({"Pmenu", "ctermfg=7", "ctermbg=0", "cterm=reverse"})
+  vim.cmd.highlight({"PmenuSel", "ctermfg=8", "ctermbg=0", "cterm=reverse"})
 end
 
 local function o_cycle(opt, on, off)
   return function()
     if vim.api.nvim_get_option_value(opt, {}) == on then
-      vim.o[opt] = off
+      vim.opt[opt] = off
     else
-      vim.o[opt] = on
+      vim.opt[opt] = on
     end
   end
 end
@@ -105,36 +108,38 @@ local function rg(opts)
 
   exec_string("rg --vimgrep '" .. pattern .. "'")
   vim.fn.setreg("/", pattern)
-  vim.o.hlsearch = true
+  vim.opt.hlsearch = true
   vim.cmd.lbuffer()
 end
 
 -- Options
-vim.o.termguicolors = false
+vim.opt.termguicolors = false
 
-vim.o.wrap = false
-vim.o.shiftwidth = 2
-vim.o.tabstop = 2
-vim.o.expandtab = true
+vim.opt.wrap = false
+vim.opt.shiftwidth = 2
+vim.opt.tabstop = 2
+vim.opt.expandtab = true
 
-vim.o.scrolloff = 10
-vim.o.sidescrolloff = 20
+vim.opt.scrolloff = 10
+vim.opt.sidescrolloff = 20
 
-vim.o.ignorecase = true
-vim.o.smartcase = true
-vim.o.listchars = "tab:> ,eol:$,space:-"
-vim.o.signcolumn = "no"
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+vim.opt.listchars = "tab:> ,eol:$,space:-"
+vim.opt.signcolumn = "no"
 
-vim.o.foldenable = true
-vim.o.foldlevel = 100
-vim.o.foldmethod = "expr"
-vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldenable = true
+vim.opt.foldlevel = 100
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 
-vim.o.splitbelow = true
-vim.o.splitright = true
+vim.opt.splitbelow = true
+vim.opt.splitright = true
 
-vim.o.pumheight = 5
-vim.o.pumwidth = 20
+vim.opt.pumheight = 5
+vim.opt.pumwidth = 20
+
+vim.opt.path:append("**")
 
 vim.g.netrw_banner = false
 vim.g.netrw_sort_options = "i"
