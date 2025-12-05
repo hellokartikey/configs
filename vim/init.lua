@@ -31,15 +31,31 @@ require('nvim-treesitter.configs').setup({ highlight = { enable = true }})
 
 -- Functions
 local function reset_bg()
-  vim.cmd.highlight({"Normal", "guibg=none", "ctermbg=none"})
-  vim.cmd.highlight({"NormalNC", "guibg=none", "ctermbg=none"})
-  vim.cmd.highlight({"EndOfBuffer", "guibg=none", "ctermbg=none"})
+  vim.cmd([[
+    hi Normal guibg=none ctermbg=none
+    hi NormalNC guibg=none ctermbg=none
+    hi EndOfBuffer guibg=none ctermbg=none
 
-  vim.cmd.highlight({"StatusLine", "ctermfg=7", "ctermbg=0", "cterm=reverse"})
-  vim.cmd.highlight({"StatusLineNC", "ctermfg=8", "ctermbg=0", "cterm=reverse"})
+    hi StatusLine cterm=reverse ctermfg=none ctermbg=none
 
-  vim.cmd.highlight({"Pmenu", "ctermfg=7", "ctermbg=0", "cterm=reverse"})
-  vim.cmd.highlight({"PmenuSel", "ctermfg=8", "ctermbg=0", "cterm=reverse"})
+    hi! link @keyword.conditional Keyword
+    hi! link @keyword.repeat Keyword
+    hi! link @keyword.type Keyword
+    hi! link @keyword.exception Keyword
+
+    hi! link @type.builtin Type
+    hi! link CursorLine ColorColumn
+
+    hi Comment cterm=nocombine,none ctermfg=7
+    hi String cterm=nocombine ctermfg=10
+    hi Type cterm=nocombine,none ctermfg=12
+    hi Identifier cterm=nocombine,none ctermfg=13
+    hi Constant cterm=nocombine,bold ctermfg=14
+    hi Keyword cterm=nocombine,italic ctermfg=15
+    hi PreProc cterm=nocombine,italic ctermfg=15
+    hi Operator cterm=nocombine,none ctermfg=15
+    hi Special cterm=nocombine,none ctermfg=15
+  ]])
 end
 
 local function o_cycle(opt, on, off)
@@ -93,7 +109,7 @@ local function fd_string(inp)
   vim.keymap.set({"n", "v"}, "o", [[:Line<CR>]], { buffer = true })
 
   if vim.fn.line("$") == 1 then
-    vim.cmd.Open()
+    vim.cmd.Line()
     return
   end
 end
@@ -114,14 +130,16 @@ end
 
 -- Options
 vim.opt.termguicolors = false
+vim.opt.laststatus = 1
+vim.opt.rulerformat = "%30(%t %M%R%=%l:%c%=%P%)"
 
 vim.opt.wrap = false
 vim.opt.shiftwidth = 2
 vim.opt.tabstop = 2
 vim.opt.expandtab = true
 
-vim.opt.scrolloff = 10
-vim.opt.sidescrolloff = 20
+vim.opt.scrolloff = 5
+vim.opt.sidescrolloff = 5
 
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
@@ -147,8 +165,9 @@ vim.g.netrw_sort_options = "i"
 vim.diagnostic.config({ virtual_text = true })
 
 vim.api.nvim_create_autocmd("ColorScheme", { callback = reset_bg })
-vim.cmd.colorscheme("vim")
+vim.cmd.colorscheme("quiet")
 vim.cmd.match("Error", [[/\s\+$/]])
+-- vim.cmd.match("Todo", [[/TODO/]])
 
 -- Commands
 vim.api.nvim_create_user_command("Rg", rg, { nargs = '+' })
@@ -198,8 +217,6 @@ vim.keymap.set("n", "<leader>w|", [[<C-w>|]])
 vim.keymap.set("n", "<leader>w+", [[<C-w>=]])
 
 vim.keymap.set("n", "<leader>q", [[:quit<CR>]])
-vim.keymap.set("n", "<leader>s", [[:update<CR>]])
-vim.keymap.set("n", "<leader>o", [[:edit ]])
 vim.keymap.set("n", "<leader>b", [[:buffers<CR>:buffer ]])
 vim.keymap.set("n", "<leader>d", [[:bdelete<CR>]])
 vim.keymap.set("n", "<leader>n", [[:bnext<CR>]])
@@ -215,6 +232,8 @@ vim.keymap.set("n", "<leader>vv", [[:ll<CR>]])
 vim.keymap.set("n", "<leader>vn", [[:lnext<CR>]])
 vim.keymap.set("n", "<leader>vp", [[:lprev<CR>]])
 
+vim.keymap.set("n", "<leader>fs", [[:update<CR>]])
+vim.keymap.set("n", "<leader>fo", [[:edit ]])
 vim.keymap.set("n", "<leader>ft", [[:Explore<CR>]])
 vim.keymap.set("n", "<leader>fe", [[:Exec ]])
 vim.keymap.set("n", "<leader>fs", [[:Scratch<CR>]])

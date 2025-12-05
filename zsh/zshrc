@@ -9,11 +9,11 @@ source $ZSH/oh-my-zsh.sh
 # Options
 setopt no_nomatch
 setopt nullglob
-setopt inc_append_history
-setopt share_history
+# setopt inc_append_history
+# setopt share_history
 setopt PROMPT_SUBST
 
-bindkey -e
+bindkey -v
 
 # Autoloads
 autoload -U colors && colors
@@ -35,7 +35,7 @@ export EDITOR=nvim
 
 export HISTSIZE=10000
 export SAVEHIST=10000
-export HISTFILE=~/.zsh_history
+# export HISTFILE=~/.zsh_history
 
 # Alias
 alias ls='ls --group-directories-first --color=tty'
@@ -57,45 +57,12 @@ alias emacs='emacs -nw'
 
 alias mobile='QT_QUICK_CONTROLS_MOBILE=true '
 
-alias dev='distrobox enter dev'
-alias kali='distrobox enter kali'
-alias study='distrobox enter study'
-
-alias ga='git add'
-alias gap='git add -p'
-
-alias gb='git branch'
-alias gba='git branch --all'
-
-alias gs='git status -u'
-
-alias gc='git commit'
-alias gcm='git commit -m'
-
-alias gp='git push'
-alias gpd='git push --dry-run'
-
-alias gl='git pull'
-
-alias gf='git fetch'
-
-alias gr='git remote -v'
-alias gra='git remote add'
-alias grr='git remote rename'
-
-alias gd='git diff'
-alias gds='git diff --staged'
-
-alias gg='git log --oneline --graph --decorate=full --all'
-
 # Functions
 
-# open command
 function open () {
     xdg-open $@ &> /dev/null
 }
 
-# app command
 function app () {
     ( $@ &> /dev/null & ) ;
 }
@@ -137,7 +104,7 @@ function _p_git() {
 }
 
 function _p_dir() {
-  echo "$fg_bold[blue]$(basename $(path))$reset_color"
+  echo "$fg_bold[blue]$(basename "$(path)")$reset_color"
 }
 
 function _p_path() {
@@ -209,4 +176,10 @@ function load_tmux () {
   fi
 }
 
-eval "$(zoxide init zsh)"
+if command -v zoxide > /dev/null; then
+  eval "$(zoxide init zsh)"
+fi
+
+if command -v opam > /dev/null; then
+  eval "$(opam env)"
+fi
