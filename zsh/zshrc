@@ -1,19 +1,11 @@
-# oh-my-zsh
-export ZSH="$HOME/.oh-my-zsh"
-export DISABLE_MAGIC_FUNCTIONS="true"
-
-zstyle ':omz:update' mode disabled
-
-source $ZSH/oh-my-zsh.sh
-
 # Options
 setopt no_nomatch
 setopt nullglob
-# setopt inc_append_history
-# setopt share_history
+setopt inc_append_history
+setopt share_history
 setopt PROMPT_SUBST
 
-bindkey -v
+bindkey -e
 
 # Autoloads
 autoload -U colors && colors
@@ -33,9 +25,9 @@ export MANPATH="/usr/local/man:$MANPATH"
 # Default editor
 export EDITOR=nvim
 
-export HISTSIZE=10000
-export SAVEHIST=10000
-# export HISTFILE=~/.zsh_history
+export HISTSIZE=100
+export SAVEHIST=0
+export HISTFILE=/dev/null
 
 # Alias
 alias ls='ls --group-directories-first --color=tty'
@@ -53,7 +45,6 @@ alias bell='printf "\a"'
 
 alias fvim='nvim $(fzf)'
 alias nvimdiff='nvim -d'
-alias emacs='emacs -nw'
 
 alias mobile='QT_QUICK_CONTROLS_MOBILE=true '
 
@@ -91,16 +82,16 @@ function path() {
 VIRTUAL_ENV_DISABLE_PROMPT=1
 
 function _p_venv() {
-  [ $VIRTUAL_ENV ] && echo "$fg_bold[white]🐍$(basename $VIRTUAL_ENV)$reset_color "
+  [ $VIRTUAL_ENV ] && echo "$fg_bold[white]$(basename $VIRTUAL_ENV)$reset_color "
 }
 
 function _p_box() {
-  [ $CONTAINER_ID ] && echo "$fg_bold[cyan]📦$CONTAINER_ID$reset_color "
+  [ $CONTAINER_ID ] && echo "$fg_bold[cyan]$CONTAINER_ID$reset_color "
 }
 
 function _p_git() {
   local branch=$(git symbolic-ref --short HEAD 2> /dev/null)
-  [ $branch ] && echo "$fg_bold[yellow]💡$branch$reset_color "
+  [ $branch ] && echo "$fg_bold[yellow]$branch$reset_color "
 }
 
 function _p_dir() {
