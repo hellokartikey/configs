@@ -1,241 +1,124 @@
--- Plugins
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-  if vim.v.shell_error ~= 0 then
-    vim.api.nvim_echo({
-      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out, "WarningMsg" },
-      { "\nPress any key to exit..." },
-    }, true, {})
-    vim.fn.getchar()
-    os.exit(1)
-  end
+-- plugins
+local path_package = vim.fn.stdpath('data') .. '/site'
+local mini_path = path_package .. '/pack/deps/start/mini.nvim'
+if not vim.loop.fs_stat(mini_path) then
+  vim.cmd('echo "Installing `mini.nvim`" | redraw')
+  local clone_cmd = {
+    'git', 'clone', '--filter=blob:none',
+    'https://github.com/nvim-mini/mini.nvim', mini_path
+  }
+  vim.fn.system(clone_cmd)
+  vim.cmd('packadd mini.nvim | helptags ALL')
+  vim.cmd('echo "Installed `mini.nvim`" | redraw')
 end
 
-vim.opt.rtp:prepend(lazypath)
+require("mini.deps").setup({ path = { package = path_package } })
 
-require("lazy").setup({
-  spec = {
-    { "mason-org/mason-lspconfig.nvim", opts = {}, dependencies = {
-      { "mason-org/mason.nvim", opts = {}, },
-      "neovim/nvim-lspconfig",
-      },
-    },
-    { "nvim-treesitter/nvim-treesitter", branch = "master", lazy = false, build = ":TSUpdate" },
+local add = MiniDeps.add
+
+add({
+  source = "https://github.com/nvim-treesitter/nvim-treesitter",
+  checkout = "master",
+  hooks = { post_checkout = function() vim.cmd('TSUpdate') end },
+})
+
+add({
+  source = "https://github.com/mason-org/mason-lspconfig.nvim",
+  depends = {
+    "https://github.com/neovim/nvim-lspconfig",
+    "https://github.com/mason-org/mason.nvim"
   },
 })
 
-require('nvim-treesitter.configs').setup({ highlight = { enable = true }})
+require("nvim-treesitter.configs").setup({
+  ensure_installed = { "cpp", "c", "python", "rust" },
+  highlight = { enable = true },
+})
 
--- Functions
-local function reset_bg()
-  vim.cmd([[
-    hi Normal guibg=none ctermbg=none
-    hi NormalNC guibg=none ctermbg=none
-    hi EndOfBuffer guibg=none ctermbg=none
+require("mason").setup()
+require("mason-lspconfig").setup()
 
-    hi StatusLine cterm=reverse ctermfg=none ctermbg=none
+require("mini.pick").setup()
+require("mini.files").setup()
+require("mini.surround").setup()
+require("mini.bracketed").setup()
+require('mini.trailspace').setup()
 
-    hi! link @keyword.conditional Keyword
-    hi! link @keyword.repeat Keyword
-    hi! link @keyword.type Keyword
-    hi! link @keyword.exception Keyword
+-- leader
+vim.g.mapleader = ' '
 
-    hi! link @type.builtin Type
-    hi! link CursorLine ColorColumn
-
-    hi Comment cterm=nocombine,none ctermfg=7
-    hi String cterm=nocombine ctermfg=10
-    hi Type cterm=nocombine,none ctermfg=12
-    hi Identifier cterm=nocombine,none ctermfg=13
-    hi Constant cterm=nocombine,bold ctermfg=14
-    hi Keyword cterm=nocombine,italic ctermfg=15
-    hi PreProc cterm=nocombine,italic ctermfg=15
-    hi Operator cterm=nocombine,none ctermfg=15
-    hi Special cterm=nocombine,none ctermfg=15
-  ]])
-end
-
-local function o_cycle(opt, on, off)
-  return function()
-    if vim.api.nvim_get_option_value(opt, {}) == on then
-      vim.opt[opt] = off
-    else
-      vim.opt[opt] = on
-    end
-  end
-end
-
-local function o_toggle(opt)
-  return o_cycle(opt, true, false)
-end
-
-local function toggle_diagnostic()
-  vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })
-end
-
-local function scratch()
-  vim.cmd.enew()
-  vim.bo.buftype = "nofile"
-  vim.bo.bufhidden = "wipe"
-end
-
-local function exec_string(cmd)
-  if cmd == nil or cmd == "" then return end
-  scratch()
-  vim.fn.setbufline(vim.fn.bufname(), "$", vim.fn.systemlist(cmd))
-end
-
-local function exec(opts)
-  exec_string(table.concat(opts.fargs, " "))
-end
-
-local function fd_string(inp)
-  if inp == nil then inp = "" end
-  exec_string("fd --type file " .. inp)
-
-  local function open_range(opts)
-    lines = vim.fn.getline(opts.line1, opts.line2)
-    for _, line in pairs(lines) do
-      vim.cmd.edit(line)
-    end
-  end
-
-  vim.api.nvim_buf_create_user_command(0, "Line", open_range, { range = true })
-
-  vim.keymap.set("n", "O", [[ggVG:Line<CR>]], { buffer = true })
-  vim.keymap.set({"n", "v"}, "o", [[:Line<CR>]], { buffer = true })
-
-  if vim.fn.line("$") == 1 then
-    vim.cmd.Line()
-    return
-  end
-end
-
-local function fd(opts)
-  fd_string(opts.fargs[1])
-end
-
-local function rg(opts)
-  local pattern = table.concat(opts.fargs, " ")
-  if pattern == "" then return end
-
-  exec_string("rg --vimgrep '" .. pattern .. "'")
-  vim.fn.setreg("/", pattern)
-  vim.opt.hlsearch = true
-  vim.cmd.lbuffer()
-end
-
--- Options
+-- misc
 vim.opt.termguicolors = false
-vim.opt.laststatus = 1
-vim.opt.rulerformat = "%30(%t %M%R%=%l:%c%=%P%)"
-
-vim.opt.wrap = false
-vim.opt.shiftwidth = 2
-vim.opt.tabstop = 2
-vim.opt.expandtab = true
-
-vim.opt.scrolloff = 5
-vim.opt.sidescrolloff = 5
-
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-vim.opt.listchars = "tab:> ,eol:$,space:-"
 vim.opt.signcolumn = "no"
 
+-- indentation
+vim.opt.expandtab = true
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+
+-- search
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+
+-- fold
 vim.opt.foldenable = true
 vim.opt.foldlevel = 100
 vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 
-vim.opt.splitbelow = true
-vim.opt.splitright = true
-
-vim.opt.pumheight = 5
-vim.opt.pumwidth = 20
-
-vim.opt.path:append("**")
-
-vim.g.netrw_banner = false
-vim.g.netrw_sort_options = "i"
-
-vim.diagnostic.config({ virtual_text = true })
-
-vim.api.nvim_create_autocmd("ColorScheme", { callback = reset_bg })
-vim.cmd.colorscheme("quiet")
-vim.cmd.match("Error", [[/\s\+$/]])
--- vim.cmd.match("Todo", [[/TODO/]])
-
--- Commands
-vim.api.nvim_create_user_command("Rg", rg, { nargs = '+' })
-vim.api.nvim_create_user_command("Fd", fd, { nargs = '?' })
-vim.api.nvim_create_user_command("Exec", exec, { nargs = '+' })
-vim.api.nvim_create_user_command("Scratch", scratch, { nargs = 0 })
-
--- Remaps
-vim.g.mapleader = " "
-
-vim.keymap.set("v", "<", [[<gv]])
-vim.keymap.set("v", ">", [[>gv]])
-vim.keymap.set("v", "-", [[:m '<-2<CR>gv=gv]])
-vim.keymap.set("v", "=", [[:m '>+1<CR>gv=gv]])
+-- whitespace
+vim.opt.wrap = false
+vim.opt.listchars = "trail:¶,tab:→ ,lead:·,space:␣"
 vim.keymap.set("i", "<S-TAB>", [[<C-v><TAB>]])
-vim.keymap.set("n", "gd", vim.lsp.buf.definition)
+vim.keymap.set("n", "<leader>wd", MiniTrailspace.trim)
+vim.keymap.set("n", "<leader>wl", MiniTrailspace.trim_last_lines)
 
+local function toggle_colorcolumn()
+  if vim.opt.colorcolumn:get()[1] == nil then
+    vim.opt.colorcolumn = "80"
+  else
+    vim.opt.colorcolumn = ""
+  end
+end
+
+-- toggles
+vim.keymap.set("n", "<leader>tw", [[:set invlist<CR>]])
+vim.keymap.set("n", "<leader>tl", [[:set invnumber<CR>]])
+vim.keymap.set("n", "<leader>tr", [[:set invrelativenumber<CR>]])
+vim.keymap.set("n", "<leader>tc", [[:set invcursorline<CR>]])
+vim.keymap.set("n", "<leader>tk", toggle_colorcolumn)
 vim.keymap.set("n", "<leader>th", [[:TSToggle highlight<CR>]])
-vim.keymap.set("n", "<leader>tw", o_toggle("list"))
-vim.keymap.set("n", "<leader>tr", o_toggle("relativenumber"))
-vim.keymap.set("n", "<leader>tl", o_toggle("number"))
-vim.keymap.set("n", "<leader>tc", o_toggle("cursorline"))
-vim.keymap.set("n", "<leader>tk", o_cycle("colorcolumn", "", "80"))
-vim.keymap.set("n", "<leader>te", toggle_diagnostic)
 
+-- editing
+vim.keymap.set("v", "<C-h>", [[<gv]])
+vim.keymap.set("v", "<C-j>", [[:move '>+1<CR>gv]])
+vim.keymap.set("v", "<C-k>", [[:move '<-2<CR>gv]])
+vim.keymap.set("v", "<C-l>", [[>gv]])
 vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
 
-vim.keymap.set("n", "<leader>ws", [[<C-w>s:Scratch<CR>]])
-vim.keymap.set("n", "<leader>wv", [[<C-w>v:Scratch<CR>]])
+-- files
+vim.keymap.set("n", "<leader>fp", [[:Pick files<CR>]])
+vim.keymap.set("n", "<leader>fe", [[:Sexplore<CR>]])
+vim.keymap.set("n", "<leader>ff", MiniFiles.open)
 
-vim.keymap.set("n", "<leader>wh", [[<C-w>h]])
-vim.keymap.set("n", "<leader>wj", [[<C-w>j]])
-vim.keymap.set("n", "<leader>wk", [[<C-w>k]])
-vim.keymap.set("n", "<leader>wl", [[<C-w>l]])
-
-vim.keymap.set("n", "<leader>wH", [[<C-w>H]])
-vim.keymap.set("n", "<leader>wJ", [[<C-w>J]])
-vim.keymap.set("n", "<leader>wK", [[<C-w>K]])
-vim.keymap.set("n", "<leader>wL", [[<C-w>L]])
-
-vim.keymap.set("n", "<leader>w-", [[<C-w>-]])
-vim.keymap.set("n", "<leader>w=", [[<C-w>+]])
-vim.keymap.set("n", "<leader>w,", [[<C-w><]])
-vim.keymap.set("n", "<leader>w.", [[<C-w>>]])
-vim.keymap.set("n", "<leader>w_", [[<C-w>_]])
-vim.keymap.set("n", "<leader>w|", [[<C-w>|]])
-vim.keymap.set("n", "<leader>w+", [[<C-w>=]])
-
-vim.keymap.set("n", "<leader>q", [[:quit<CR>]])
+-- buffers
 vim.keymap.set("n", "<leader>b", [[:buffers<CR>:buffer ]])
 vim.keymap.set("n", "<leader>d", [[:bdelete<CR>]])
 vim.keymap.set("n", "<leader>n", [[:bnext<CR>]])
 vim.keymap.set("n", "<leader>p", [[:bprev<CR>]])
 
+-- quickfix list
 vim.keymap.set("n", "<leader>co", [[:copen<CR>]])
 vim.keymap.set("n", "<leader>cc", [[:cc<CR>]])
 vim.keymap.set("n", "<leader>cn", [[:cnext<CR>]])
 vim.keymap.set("n", "<leader>cp", [[:cprev<CR>]])
 
+-- location list
 vim.keymap.set("n", "<leader>vo", [[:lopen<CR>]])
 vim.keymap.set("n", "<leader>vv", [[:ll<CR>]])
 vim.keymap.set("n", "<leader>vn", [[:lnext<CR>]])
 vim.keymap.set("n", "<leader>vp", [[:lprev<CR>]])
 
-vim.keymap.set("n", "<leader>fs", [[:update<CR>]])
-vim.keymap.set("n", "<leader>fo", [[:edit ]])
-vim.keymap.set("n", "<leader>ft", [[:Explore<CR>]])
-vim.keymap.set("n", "<leader>fe", [[:Exec ]])
-vim.keymap.set("n", "<leader>fs", [[:Scratch<CR>]])
-vim.keymap.set("n", "<leader>fd", [[:Fd ]])
-vim.keymap.set("n", "<leader>fr", [[:Rg ]])
+-- netrw
+vim.g.netrw_banner = false
+vim.g.netrw_sort_options = "i"
