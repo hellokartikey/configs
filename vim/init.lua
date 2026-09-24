@@ -25,23 +25,35 @@ require("mini.surround").setup()
 require("mini.bracketed").setup()
 require("mini.move").setup()
 require("mini.pairs").setup()
-require("mini.completion").setup({ delay = { completion = 2^16 } })
 require("mini.trailspace").setup()
+require("mini.completion").setup({
+  delay = { completion = 2^16 },
+  window = { info = { border = "" }, signature = { border = "" } }
+})
+--
+
+-- netrw
+vim.g.netrw_banner = 0
+vim.g.netrw_sort_option = "i"
 --
 
 -- fzf.vim
-vim.g.fzf_vim = {
-  preview_window = {},
-  options = { "--no-footer" }
-}
-
+vim.g.fzf_vim = { preview_window = {}, options = { "--no-footer" } }
 vim.g.fzf_layout = { window = "enew" }
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "fzf", "netrw" },
+  group = vim.api.nvim_create_augroup("hk_fzf", { clear = true }),
+  callback = function(ev)
+    vim.keymap.set({ "n", "t" }, "<ESC>", [[<CMD>bdelete!<CR>]])
+  end
+})
 --
 
 -- nvim-treesitter
 require('nvim-treesitter').setup()
 vim.api.nvim_create_autocmd("FileType", {
-  group = vim.api.nvim_create_augroup("hk_config", { clear = false }),
+  group = vim.api.nvim_create_augroup("hk_tree", { clear = true }),
   callback = function(ev)
     local lang = vim.treesitter.language.get_lang(ev.match)
 
@@ -70,7 +82,7 @@ vim.lsp.enable('clangd')
 vim.lsp.enable('lua-language-server')
 
 vim.api.nvim_create_autocmd("LspAttach", {
-  group = vim.api.nvim_create_augroup("hk_config", { clear = false }),
+  group = vim.api.nvim_create_augroup("hk_lsp", { clear = true }),
   callback = function(ev)
     local client = vim.lsp.get_client_by_id(ev.data.client_id)
     client.server_capabilities.semanticTokensProvider = nil
@@ -95,7 +107,6 @@ vim.opt.termguicolors = false
 
 vim.opt.wrap = false
 vim.opt.breakindent = true
-
 vim.opt.scrolloff = 2
 
 vim.opt.ignorecase = true
@@ -106,7 +117,7 @@ local LIST_DEF = { leadmultispace = "⋅ ", tab = "  ",  leadtab = "→ " }
 vim.opt.listchars = LIST_DEF
 vim.opt.list = true
 
-vim.opt.tabstop = 4
+vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 vim.opt.smartindent = true
@@ -120,11 +131,9 @@ local COLUMN_DEF = {}
 local COLUMN_ALL = { 80, 120 }
 vim.opt.colorcolumn = COLUMN_DEF
 vim.opt.cursorline = false
+vim.opt.number = true
 
 vim.opt.foldlevel = 2^16
-
-vim.g.netrw_banner = 0
-vim.g.netrw_sort_option = "i"
 --
 
 -- keymaps
