@@ -1,124 +1,172 @@
--- plugins
-local path_package = vim.fn.stdpath('data') .. '/site'
-local mini_path = path_package .. '/pack/deps/start/mini.nvim'
-if not vim.loop.fs_stat(mini_path) then
-  vim.cmd('echo "Installing `mini.nvim`" | redraw')
-  local clone_cmd = {
-    'git', 'clone', '--filter=blob:none',
-    'https://github.com/nvim-mini/mini.nvim', mini_path
-  }
-  vim.fn.system(clone_cmd)
-  vim.cmd('packadd mini.nvim | helptags ALL')
-  vim.cmd('echo "Installed `mini.nvim`" | redraw')
+vim.pack.add {
+  "https://github.com/neovim-treesitter/nvim-treesitter",
+  "https://github.com/neovim/nvim-lspconfig",
+  "https://github.com/nvim-mini/mini.nvim",
+  "https://github.com/junegunn/fzf.vim",
+  "https://github.com/mbbill/undotree"
+}
+
+-- undotree
+local UNDODIR = vim.fn.expand('~/.cache/nvim/undodir')
+
+if vim.fn.isdirectory(UNDODIR) == 0 then
+  vim.fn.mkdir(UNDODIR, "p", 0700)
 end
 
-require("mini.deps").setup({ path = { package = path_package } })
+vim.opt.undodir = UNDODIR
+vim.opt.undofile = true
 
-local add = MiniDeps.add
+vim.g.undotree_WindowLayout = 3
+--
 
-add({
-  source = "https://github.com/nvim-treesitter/nvim-treesitter",
-  checkout = "master",
-  hooks = { post_checkout = function() vim.cmd('TSUpdate') end },
-})
-
-add({
-  source = "https://github.com/mason-org/mason-lspconfig.nvim",
-  depends = {
-    "https://github.com/neovim/nvim-lspconfig",
-    "https://github.com/mason-org/mason.nvim"
-  },
-})
-
-require("nvim-treesitter.configs").setup({
-  ensure_installed = { "cpp", "c", "python", "rust" },
-  highlight = { enable = true },
-})
-
-require("mason").setup()
-require("mason-lspconfig").setup()
-
-require("mini.pick").setup()
-require("mini.files").setup()
+-- mini.nvim
+require("mini.ai").setup()
 require("mini.surround").setup()
 require("mini.bracketed").setup()
-require('mini.trailspace').setup()
+require("mini.move").setup()
+require("mini.pairs").setup()
+require("mini.completion").setup({ delay = { completion = 2^16 } })
+require("mini.trailspace").setup()
+--
 
--- leader
-vim.g.mapleader = ' '
+-- fzf.vim
+vim.g.fzf_vim = {
+  preview_window = {},
+  options = { "--no-footer" }
+}
 
--- misc
+vim.g.fzf_layout = { window = "enew" }
+--
+
+-- nvim-treesitter
+require('nvim-treesitter').setup()
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("hk_config", { clear = false }),
+  callback = function(ev)
+    local lang = vim.treesitter.language.get_lang(ev.match)
+
+    if not lang or not vim.treesitter.language.add(lang) then
+      return
+    end
+
+    if vim.treesitter.query.get(lang, "highlights") then
+      vim.treesitter.start(ev.buf)
+    end
+
+    if vim.treesitter.query.get(lang, "indent") then
+      vim.bo.indentexpr = "v:lua.require('nvim-treesitter').indentexpr()"
+    end
+
+    if vim.treesitter.query.get(lang, "folds") then
+      vim.wo.foldmethod = "expr"
+      vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+    end
+  end
+})
+--
+
+-- lsp-config
+vim.lsp.enable('clangd')
+vim.lsp.enable('lua-language-server')
+
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("hk_config", { clear = false }),
+  callback = function(ev)
+    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    client.server_capabilities.semanticTokensProvider = nil
+  end
+})
+--
+
+-- colors
+function set_background(ev)
+  vim.cmd([[:highlight Normal      ctermbg=none guibg=none]])
+  vim.cmd([[:highlight NormalNC    ctermbg=none guibg=none]])
+  vim.cmd([[:highlight EndOfBuffer ctermbg=none guibg=none]])
+end
+
+vim.cmd.colorscheme("unokai")
+set_background()
+vim.api.nvim_create_autocmd("ColorScheme", { callback = set_background })
+--
+
+-- options
 vim.opt.termguicolors = false
-vim.opt.signcolumn = "no"
 
--- indentation
-vim.opt.expandtab = true
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
+vim.opt.wrap = false
+vim.opt.breakindent = true
 
--- search
+vim.opt.scrolloff = 2
+
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
--- fold
-vim.opt.foldenable = true
-vim.opt.foldlevel = 100
-vim.opt.foldmethod = "expr"
-vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+local LIST_ALL = { eol = "¶", tab = "→ ", trail = "¿", leadmultispace = "⋅ ", leadtab = "→ " }
+local LIST_DEF = { leadmultispace = "⋅ ", tab = "  ",  leadtab = "→ " }
+vim.opt.listchars = LIST_DEF
+vim.opt.list = true
 
--- whitespace
-vim.opt.wrap = false
-vim.opt.listchars = "trail:¶,tab:→ ,lead:·,space:␣"
-vim.keymap.set("i", "<S-TAB>", [[<C-v><TAB>]])
-vim.keymap.set("n", "<leader>wd", MiniTrailspace.trim)
-vim.keymap.set("n", "<leader>wl", MiniTrailspace.trim_last_lines)
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
+vim.opt.smartindent = true
 
-local function toggle_colorcolumn()
-  if vim.opt.colorcolumn:get()[1] == nil then
-    vim.opt.colorcolumn = "80"
+vim.opt.scl = "no"
+vim.opt.completeopt = { "menu", "noselect" }
+vim.opt.pumheight = 5
+vim.opt.pummaxwidth = 50
+
+local COLUMN_DEF = {}
+local COLUMN_ALL = { 80, 120 }
+vim.opt.colorcolumn = COLUMN_DEF
+vim.opt.cursorline = false
+
+vim.opt.foldlevel = 2^16
+
+vim.g.netrw_banner = 0
+vim.g.netrw_sort_option = "i"
+--
+
+-- keymaps
+function toggle_list()
+  if vim.deep_equal(vim.opt.listchars:get(), LIST_DEF) then
+    vim.opt.listchars = LIST_ALL
   else
-    vim.opt.colorcolumn = ""
+    vim.opt.listchars = LIST_DEF
   end
 end
 
--- toggles
-vim.keymap.set("n", "<leader>tw", [[:set invlist<CR>]])
-vim.keymap.set("n", "<leader>tl", [[:set invnumber<CR>]])
-vim.keymap.set("n", "<leader>tr", [[:set invrelativenumber<CR>]])
-vim.keymap.set("n", "<leader>tc", [[:set invcursorline<CR>]])
-vim.keymap.set("n", "<leader>tk", toggle_colorcolumn)
-vim.keymap.set("n", "<leader>th", [[:TSToggle highlight<CR>]])
+function toggle_column()
+  if vim.deep_equal(vim.opt.colorcolumn:get(), COLUMN_DEF) then
+    vim.opt.colorcolumn = COLUMN_ALL
+  else
+    vim.opt.colorcolumn = COLUMN_DEF
+  end
+end
 
--- editing
-vim.keymap.set("v", "<C-h>", [[<gv]])
-vim.keymap.set("v", "<C-j>", [[:move '>+1<CR>gv]])
-vim.keymap.set("v", "<C-k>", [[:move '<-2<CR>gv]])
-vim.keymap.set("v", "<C-l>", [[>gv]])
-vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
+vim.g.mapleader = " "
+vim.keymap.set("t", "<ESC>", [[<C-\><C-n>]])
 
--- files
-vim.keymap.set("n", "<leader>fp", [[:Pick files<CR>]])
-vim.keymap.set("n", "<leader>fe", [[:Sexplore<CR>]])
-vim.keymap.set("n", "<leader>ff", MiniFiles.open)
+vim.keymap.set("i", "<C-n>", [[<C-x><C-o>]])
+vim.keymap.set("i", "<S-TAB>", [[<C-v><TAB>]])
 
--- buffers
-vim.keymap.set("n", "<leader>b", [[:buffers<CR>:buffer ]])
 vim.keymap.set("n", "<leader>d", [[:bdelete<CR>]])
-vim.keymap.set("n", "<leader>n", [[:bnext<CR>]])
-vim.keymap.set("n", "<leader>p", [[:bprev<CR>]])
+vim.keymap.set("n", "<leader>q", [[:bdelete!<CR>]])
+vim.keymap.set("n", "<leader>u", [[:UndotreeToggle<CR>:UndotreeFocus<CR>]])
+vim.keymap.set("n", "<leader>x", [[:Explore<CR>]])
 
--- quickfix list
-vim.keymap.set("n", "<leader>co", [[:copen<CR>]])
-vim.keymap.set("n", "<leader>cc", [[:cc<CR>]])
-vim.keymap.set("n", "<leader>cn", [[:cnext<CR>]])
-vim.keymap.set("n", "<leader>cp", [[:cprev<CR>]])
+vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
 
--- location list
-vim.keymap.set("n", "<leader>vo", [[:lopen<CR>]])
-vim.keymap.set("n", "<leader>vv", [[:ll<CR>]])
-vim.keymap.set("n", "<leader>vn", [[:lnext<CR>]])
-vim.keymap.set("n", "<leader>vp", [[:lprev<CR>]])
+vim.keymap.set("n", "<leader>tn", [[:set number!<CR>]])
+vim.keymap.set("n", "<leader>tr", [[:set relativenumber!<CR>]])
+vim.keymap.set("n", "<leader>tc", [[:set cursorline!<CR>]])
+vim.keymap.set("n", "<leader>tk", toggle_column)
+vim.keymap.set("n", "<leader>tw", toggle_list)
 
--- netrw
-vim.g.netrw_banner = false
-vim.g.netrw_sort_options = "i"
+vim.keymap.set("n", "<leader>wd", MiniTrailspace.trim)
+vim.keymap.set("n", "<leader>wl", MiniTrailspace.trim_last_lines)
+
+vim.keymap.set("n", "<leader>f", [[:Files<CR>]])
+vim.keymap.set("n", "<leader>b", [[:Buffers<CR>]])
+vim.keymap.set("n", "<leader>r", [[:RG<CR>]])
+--
