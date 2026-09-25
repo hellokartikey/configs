@@ -1,20 +1,24 @@
 vim.pack.add {
-  "https://github.com/neovim-treesitter/nvim-treesitter",
+  "https://github.com/nvim-treesitter/nvim-treesitter",
   "https://github.com/neovim/nvim-lspconfig",
   "https://github.com/nvim-mini/mini.nvim",
   "https://github.com/junegunn/fzf.vim",
-  "https://github.com/mbbill/undotree"
+  "https://github.com/mbbill/undotree",
+  "https://github.com/rmehri01/onenord.nvim",
 }
 
--- undotree
+local FLOAT_MAXWIDTH = 50
+local BORDER = "single"
 local UNDODIR = vim.fn.expand('~/.cache/nvim/undodir')
+local LIST_ALL = { eol = "¶", tab = "→ ", trail = "¿", space = "␣", leadmultispace = "⋅ ", leadtab = "→ " }
+local LIST_DEF = { tab = "  " }
+local COLUMN_DEF = {}
+local COLUMN_ALL = { 80, 120 }
 
+-- undotree
 if vim.fn.isdirectory(UNDODIR) == 0 then
   vim.fn.mkdir(UNDODIR, "p", 0700)
 end
-
-vim.opt.undodir = UNDODIR
-vim.opt.undofile = true
 
 vim.g.undotree_WindowLayout = 3
 --
@@ -28,7 +32,6 @@ require("mini.pairs").setup()
 require("mini.trailspace").setup()
 require("mini.completion").setup({
   delay = { completion = 2^16 },
-  window = { info = { border = "" }, signature = { border = "" } }
 })
 --
 
@@ -38,14 +41,14 @@ vim.g.netrw_sort_option = "i"
 --
 
 -- fzf.vim
-vim.g.fzf_vim = { preview_window = {}, options = { "--no-footer" } }
+vim.g.fzf_vim = { preview_window = {}, options = { "--style", "minimal", "--no-footer" } }
 vim.g.fzf_layout = { window = "enew" }
 
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "fzf", "netrw" },
   group = vim.api.nvim_create_augroup("hk_fzf", { clear = true }),
   callback = function(ev)
-    vim.keymap.set({ "n", "t" }, "<ESC>", [[<CMD>bdelete!<CR>]])
+    vim.keymap.set({ "n", "t" }, "<ESC>", [[<CMD>bdelete!<CR>]], { buf = 0 })
   end
 })
 --
@@ -81,6 +84,13 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.lsp.enable('clangd')
 vim.lsp.enable('lua-language-server')
 
+vim.diagnostic.config({
+  float = {
+    max_width = FLOAT_MAXWIDTH,
+    border = BORDER
+  }
+})
+
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("hk_lsp", { clear = true }),
   callback = function(ev)
@@ -95,6 +105,8 @@ function set_background(ev)
   vim.cmd([[:highlight Normal      ctermbg=none guibg=none]])
   vim.cmd([[:highlight NormalNC    ctermbg=none guibg=none]])
   vim.cmd([[:highlight EndOfBuffer ctermbg=none guibg=none]])
+  vim.cmd([[:highlight Pmenu       ctermbg=none guibg=none]])
+  vim.cmd([[:highlight link FloatBorder Pmenu]])
 end
 
 vim.cmd.colorscheme("unokai")
@@ -109,11 +121,12 @@ vim.opt.wrap = false
 vim.opt.breakindent = true
 vim.opt.scrolloff = 2
 
+vim.opt.undodir = UNDODIR
+vim.opt.undofile = true
+
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
-local LIST_ALL = { eol = "¶", tab = "→ ", trail = "¿", leadmultispace = "⋅ ", leadtab = "→ " }
-local LIST_DEF = { leadmultispace = "⋅ ", tab = "  ",  leadtab = "→ " }
 vim.opt.listchars = LIST_DEF
 vim.opt.list = true
 
@@ -124,11 +137,10 @@ vim.opt.smartindent = true
 
 vim.opt.scl = "no"
 vim.opt.completeopt = { "menu", "noselect" }
+vim.opt.pumborder = BORDER
 vim.opt.pumheight = 5
-vim.opt.pummaxwidth = 50
+vim.opt.pummaxwidth = FLOAT_MAXWIDTH
 
-local COLUMN_DEF = {}
-local COLUMN_ALL = { 80, 120 }
 vim.opt.colorcolumn = COLUMN_DEF
 vim.opt.cursorline = false
 vim.opt.number = true
